@@ -21,6 +21,7 @@ import numpy as np
 import openmdao.api as om
 
 X_TINY = 1.0e-12     # guard for x**(K4-1) and log(x) at x = 0
+X_MAX = 200.0        # ceiling on the drag rise excess; see lift_coef_comp
 
 
 class DragCoefHoverComp(om.ExplicitComponent):
@@ -59,7 +60,10 @@ class DragCoefHoverComp(om.ExplicitComponent):
             ref, dref = np.abs(alpha), np.sign(alpha)
         else:
             ref, dref = alpha, np.ones_like(alpha)
-        return np.maximum(ref - inputs['alpha_D'], 0.0), dref
+        raw = ref - inputs['alpha_D']
+        x = np.clip(np.real(raw), 0.0, X_MAX)
+        x = np.where((np.real(raw) > 0.0) & (np.real(raw) < X_MAX), raw, x)
+        return x, np.where(np.real(raw) < X_MAX, dref, 0.0)
 
     def compute(self, inputs, outputs):
         x, _ = self._excess(inputs)
@@ -72,10 +76,13 @@ class DragCoefHoverComp(om.ExplicitComponent):
         x, dref = self._excess(inputs)
         K3, K4 = inputs['K3'], inputs['K4']
         xs = np.maximum(x, X_TINY)
-        active = x > 0.0
+        # see LiftCoefComp: existence and mobility of the drag rise are two
+        # different conditions once the excess is clipped
+        active = np.real(x) > 0.0
+        moving = active & (np.real(x) < X_MAX)
 
         xK4 = np.where(active, xs ** K4, 0.0)                 # (a - aD)**K4
-        dxK4 = np.where(active, K4 * xs ** (K4 - 1.0), 0.0)   # d/dx of the above
+        dxK4 = np.where(moving, K4 * xs ** (K4 - 1.0), 0.0)   # d/dx of the above
 
         partials['cd', 'alpha'] = K3 * dxK4 * dref
         partials['cd', 'alpha_D'] = -K3 * dxK4

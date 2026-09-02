@@ -1,151 +1,109 @@
-# Prouty Helicopter Design
+# prouty
 
-OpenMDAO implementation of the helicopter analysis and preliminary design methods
-described in **R.W. Prouty, _Helicopter Performance, Stability and Control_**.
+Prouty, *Helicopter Performance, Stability and Control*, implemented as
+OpenMDAO models for preliminary rotorcraft design and optimisation.
 
-Every component carries the page numbers of the equations it implements, so the
-code can be read side by side with the book. Analytic derivatives are provided
-throughout, which makes the models usable inside gradient-based optimisation.
+Every component carries its page reference. Departures from the printed text,
+and disagreements found inside it, are measured and recorded in
+`docs/validation_forward_flight.md` rather than silently corrected.
 
-## Status
+## Installed
 
-| Module | Book chapter | Pages | Status |
-|---|---|---|---|
-| `prouty.airfoil` | 6 — Airfoils for Rotor Blades | 426-434 | implemented, validated |
-| `prouty.hover` | 1 — Aerodynamics of Hovering Flight | — | planned |
-| `prouty.forward_flight` | 3 — Aerodynamics of Forward Flight | — | planned |
-| `prouty.performance` | 4 — Performance Analysis | — | planned |
-| `prouty.stability` | 8 — Stability and Control Analysis | — | planned |
-| `prouty.design` | 10 — Preliminary Design | — | planned |
+| package | chapter | state |
+|---|---|---|
+| `prouty.hover` | 1, Aerodynamics of Vertical Flight | complete |
+| `prouty.airfoil` | 6, Airfoils for Rotor Blades | complete |
+| `prouty.forward_flight` | 3, Aerodynamics of Forward Flight | complete |
 
-## Installation
+## Chapter 3 at a glance
 
-```bash
-git clone https://github.com/<user>/prouty-helicopter-design.git
-cd prouty-helicopter-design
-pip install -e ".[validation,dev]"
-```
+Two interchangeable rotor models:
 
-## Quick start
+* **closed form** (G1), the equations of p. 167-200, instant, assumes a mean
+  drag coefficient;
+* **numerical** (G2), the blade element integration of p. 208-228, which
+  resolves the disc element by element and calls the Chapter 6 airfoil.
+
+`TrimConditionsGroup`, `FixedCollectiveTrimGroup` and `WindTunnelRotorGroup`
+all take `rotor='closed_form'` or `'numerical'`. The choice matters most where
+the induced torque is negative — a dive, an autorotation, a rotor at positive
+shaft angle in a tunnel — because C_Q is then a small difference of cancelling
+terms and a mean drag coefficient has no signal left to give. On the wind
+tunnel case of Table 3.5 the closed form has the rotor *extracting* energy;
+G2 does not.
 
 ```python
-import numpy as np
-import openmdao.api as om
-from prouty.airfoil import AirfoilHoverGroup
+import numpy as np, openmdao.api as om
+from prouty.forward_flight import TrimConditionsGroup
 
-nn = 3
+# the example helicopter of Table 3.3, p. 196
+ROTOR = dict(V_tip=650.0, rho=0.002377, A_b=240.0, sigma=0.084883, R=30.0,
+             theta_1=np.deg2rad(-10.0), a=6.0, gamma=8.05033, B=0.97,
+             x_0=0.15, cd_bar=0.0100, i_s=0.0, a1s=0.0, l_T_R=1.23,
+             delta_3=np.deg2rad(-30.0))
+
 p = om.Problem()
-p.model.add_subsystem('af', AirfoilHoverGroup(num_nodes=nn), promotes=['*'])
+p.model.add_subsystem('trim', TrimConditionsGroup(mode='level'), promotes=['*'])
 p.setup()
-p.set_val('M', [0.2, 0.5, 0.7])
-p.set_val('alpha', [8.0, 8.0, 8.0])
+for name, value in {**ROTOR, 'mu': 0.3, 'GW': 20000.0}.items():
+    p.set_val(name, value)
 p.run_model()
 
-print(p.get_val('cl'))   # [0.7834 0.8581 0.7048]
-print(p.get_val('cd'))   # [0.0132 0.0215 0.1190]
+print(p.get_val('theta_0', units='deg'), p.get_val('hp_M'))
+# [16.50] [1077.34]   Table 3.3 gives 15.8 deg and 1,373 hp; see the notes
 ```
 
-## Module `prouty.airfoil`
+The group has defaults for every input, but they describe no particular
+helicopter and the trim will not converge from them. Give it a rotor.
 
-Represents NACA 0012 lift and drag as closed-form functions of angle of attack
-and Mach number, following the section *Representing Airfoil Data with
-Equations* (p. 426). Two groups are provided.
 
-### `AirfoilHoverGroup` — inputs `M`, `alpha` [deg] → `cl`, `cd`
+## Validation notes
 
-| Component | Role | Pages |
-|---|---|---|
-| `LiftModelCoefsComp` | `a`, `alpha_L`, `K1`, `K2` from Mach | 427-430 |
-| `LiftCoefComp` | assembles `cl` | 428, 430 |
-| `DragModelCoefsComp` | `alpha_D`, `K3`, `K4`, `delta_cd_M` from Mach | 432-433 |
-| `IncompDragHoverComp` | asymmetric 5-term drag series | 432 |
-| `DragCoefHoverComp` | assembles `cd` | 432-433 |
-
-### `AirfoilForwardFlightGroup` — inputs `M`, `alpha_raw` [deg] → `cl`, `cd`
-
-Adds the two modifications required for forward flight (p. 433): an even-power
-drag series, since negative angles occur on the advancing tip, and an extension
-of both coefficients over the full 0-360 deg range, since inboard elements on
-the retreating side operate well beyond stall.
-
-| Component | Role | Pages |
-|---|---|---|
-| `AlphaWrapComp` | wraps angle onto [0,360) and [-180,180) | 214, 433 |
-| `IncompDragFwdComp` | even-power 4-term drag series | 433 |
-| `LiftCoefFwdComp` | 7-segment lift assembly | 433 |
-| `DragCoefFwdComp` | 3-segment drag assembly | 434 |
-
-`LiftModelCoefsComp`, `LiftCoefComp` and `DragModelCoefsComp` are shared
-unchanged between the two groups: the Mach-dependent laws are identical, only
-the angle handling differs.
-
-## Design choices
-
-**Separation of concerns.** Components split into two families: those computing
-coefficients that depend on Mach only, and those assembling a coefficient as a
-function of angle. This is what allows three components to be reused verbatim
-between hover and forward flight, with no duplicated equation.
-
-**Smoothing.** The book defines the model piecewise. Discontinuous branches are
-joined by a cubic smoothstep so that the assembled functions are C1 and safe for
-gradient-based optimisation:
-
-- Mach break at 0.725 in the lift model: band `[0.725, 0.745]`, deliberately
-  offset rather than centred, because `(M - 0.725)**0.44` has infinite slope at
-  the break and the quadratic onset of the smoothstep cancels it.
-- Mach break at 0.725 in the drag model: band `[0.715, 0.735]`, centred, since
-  `K3` has a genuine value jump (0.00066 to 0.00035) and no singularity.
-- Segment boundaries in forward flight: half-width 2 deg.
-
-Stall onset in `cl` and drag divergence in `cd` need **no** smoothing: their
-exponents `K2 = 2.05 - 0.95M` and `K4 = 2.54` both exceed 1, so the piecewise
-functions are already C1 at the junction. A clip to zero is sufficient.
-
-**Vectorisation.** All components take `num_nodes`-shaped arrays, so a full
-blade-element by azimuth mesh is evaluated in a single pass.
+| file | covers |
+|---|---|
+| `docs/validation_forward_flight.md` | Chapter 3, five sections, 563 lines |
+| `docs/validation_airfoil.md` | Chapter 6, figure-by-figure anchors |
 
 ## Validation
 
-```bash
-python validation/validate_hover_group.py   # against Fig. 6.43, p. 427
-python validation/validate_fwd_group.py     # against Fig. 6.47, p. 434
+The suite anchors against the book's own tables and figures, and — for the
+wind tunnel case — against measurement. Known disagreements are asserted as
+such, so that a change which happens to fix one is noticed rather than
+absorbed.
+
+```
+pip install -e ".[dev]"
+pytest -m "not slow"        # 92 tests, 30 s
+pytest                      # 118 tests, about 6 min
 ```
 
-Results are summarised in [`docs/validation_notes.md`](docs/validation_notes.md).
-Headlines:
+The tests marked `slow` converge G2 repeatedly — chart generation, the wind
+tunnel case, the collective sweep, the total derivatives. Skipping them keeps
+the fast suite usable as a working loop; the full suite is for before a
+commit.
 
-- `K1` reproduces the tabulated values of p. 429-430 exactly at M = 0.2, 0.5, 0.7.
-- Segment values of p. 433-434 are reproduced exactly (`cl = ±1.15` at 45/315 deg,
-  `cd = 2.05` at 90/270 deg, `cd = 0.01` at 180 deg).
-- Lift antisymmetry and drag symmetry about 0 deg hold to 3e-14.
-- `check_partials` and `check_totals` clean on every component and both groups.
+## What is not done
 
-## Known limitations of the model
+* the shed-vorticity correction of p. 224-225 is off by default: it is correct
+  outboard of r/R = 0.7 and wrong at the root, and the 1/rev assumption it
+  rests on holds nowhere on the disc;
+* C_H/sigma sits a factor of 1.9 below chart 3 with no cause found in nine
+  measured eliminations; the resumption point is written up in the notes;
+* the isolated rotor charts can be generated but the full set of 45 plates has
+  not been run.
 
-These are properties of Prouty's fits, not of the implementation. They are
-documented because they matter when sweeping a full (alpha, M) domain.
+## Layout
 
-**Lift above M = 0.725.** `K1 = 0.0575 - 0.144(M - 0.725)**0.44` decreases with
-Mach and reaches zero near M = 0.83, so the model produces no stall above that
-speed and the high-Mach curves cross the lower ones. The value 0.0575 (rather
-than the 0.575 printed in the constants list on p. 430) is confirmed by
-continuity at the break: 0.05761 from below against 0.05750 from above. Trust
-the lift model for `M <= 0.725` unrestricted, and for `alpha <= 6 deg` above it.
-The `clip_K1` option on `LiftCoefComp` (default `True`) bounds `K1` at zero.
-
-**Drag across the divergence break.** `K3` drops while the zero-angle term only
-compensates at `alpha = 0`, so at `alpha = 8 deg` drag decreases from 0.119 at
-M = 0.70 to 0.087 at M = 0.80. High Mach and high incidence do not coexist on a
-rotor, so this region is rarely visited.
-
-**Segment junction at 20 deg.** The high-angle data of Fig. 6.47 was measured at
-low Mach (p. 433), whereas the generated branch depends strongly on Mach. The
-two branches nearly meet at M = 0.1 but differ by a factor of 3.6 at M = 0.5.
-The junction is only physically consistent at low Mach — which is where
-inboard retreating-blade elements actually operate.
-
-## References
-
-R.W. Prouty, *Helicopter Performance, Stability and Control*, Krieger, 1990.
-Chapter 6, "Airfoils for Rotor Blades", p. 426-434; quadrant convention p. 214;
-lift coefficient bounds in the reverse flow region p. 221.
+```
+src/prouty/
+    hover/              Chapter 1, 32 modules
+    airfoil/            Chapter 6, 13 modules
+    forward_flight/     Chapter 3, 58 modules
+    design/             Chapter 9, stub
+    performance/        Chapter 7, stub
+    stability/          Chapter 8, stub
+tests/                  153 tests, 26 marked slow
+docs/                   validation notes, one file per chapter
+validation/             figure-reproduction scripts
+scripts/                documented disagreements, kept runnable
+```

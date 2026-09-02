@@ -19,6 +19,31 @@ import openmdao.api as om
 M_BREAK = 0.725      # compressibility break, p. 426
 M_BLEND = 0.020      # blending band width [M_BREAK, M_BREAK + M_BLEND]
 X_TINY = 1.0e-12     # guard for the (M - M_BREAK)**0.44 singularity
+M_FLOOR = 0.0        # see _clip
+M_CEIL = 0.99        # see _clip
+
+
+def _clip(M):
+    """Keep the Mach number inside the domain where the model is a number.
+
+    The Prandtl-Glauert factor 1/sqrt(1 - M^2) is undefined at and above M = 1
+    and M**7.15 is undefined below zero, so a caller handing this component an
+    out-of-range Mach number gets NaN back and, if it is a Newton solver, loses
+    the whole residual vector to it. That is not hypothetical: the numerical
+    rotor method of Chapter 3 carries M as a solver state, so an overshooting
+    step passes values this model was never fitted for. Clipping returns a
+    finite -- if meaningless -- coefficient instead, with zero derivative
+    outside the range so the solver is not pulled further out.
+
+    The range is never reached in a converged solution: the advancing tip of
+    the example helicopter sits at M = 0.757.
+    """
+    # the floor is inclusive: M = 0 is a legitimate operating point at the
+    # root of the disc and the model is perfectly well defined there, it is
+    # only M < 0 that breaks M**7.15
+    inside = (np.real(M) >= M_FLOOR) & (np.real(M) < M_CEIL)
+    return np.where(inside, M, np.where(np.real(M) <= M_FLOOR,
+                                        M_FLOOR, M_CEIL)), inside
 
 
 class LiftModelCoefsComp(om.ExplicitComponent):
@@ -54,7 +79,7 @@ class LiftModelCoefsComp(om.ExplicitComponent):
         return w, dw
 
     def compute(self, inputs, outputs):
-        M = inputs['M']
+        M, _ = _clip(inputs['M'])
         w, _ = self._weight(M)
 
         # --- low-Mach branch, M <= 0.725 (p. 427-428, 430) -------------
@@ -75,7 +100,7 @@ class LiftModelCoefsComp(om.ExplicitComponent):
         outputs['K2'] = 2.05 - 0.95 * M          # both regimes, p. 429
 
     def compute_partials(self, inputs, partials):
-        M = inputs['M']
+        M, inside = _clip(inputs['M'])
         w, dw = self._weight(M)
 
         s = np.sqrt(1.0 - M ** 2)
@@ -97,10 +122,13 @@ class LiftModelCoefsComp(om.ExplicitComponent):
         # zeroed where the branch is inactive, so w * inf never appears
         dK1_hi = np.where(M > M_BREAK, -0.144 * 0.44 * x ** (-0.56), 0.0)
 
-        partials['a', 'M'] = (1 - w) * da_lo + w * da_hi + (a_hi - a_lo) * dw
-        partials['alpha_L', 'M'] = (1 - w) * daL_lo + w * daL_hi + (aL_hi - aL_lo) * dw
-        partials['K1', 'M'] = (1 - w) * dK1_lo + w * dK1_hi + (K1_hi - K1_lo) * dw
-        partials['K2', 'M'] = -0.95
+        partials['a', 'M'] = inside * (
+            (1 - w) * da_lo + w * da_hi + (a_hi - a_lo) * dw)
+        partials['alpha_L', 'M'] = inside * (
+            (1 - w) * daL_lo + w * daL_hi + (aL_hi - aL_lo) * dw)
+        partials['K1', 'M'] = inside * (
+            (1 - w) * dK1_lo + w * dK1_hi + (K1_hi - K1_lo) * dw)
+        partials['K2', 'M'] = -0.95 * inside
 
 
 if __name__ == '__main__':

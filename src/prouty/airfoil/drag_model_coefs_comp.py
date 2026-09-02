@@ -27,6 +27,17 @@ K3_HIGH = 0.00035    # p. 433
 K4 = 2.54            # same exponent in both regimes, p. 432-433
 K5 = 21.0            # p. 433
 K6 = 3.2             # p. 433
+M_FLOOR, M_CEIL = 0.0, 0.99      # see lift_model_coefs_comp._clip
+
+
+def _clip(M):
+    """Same domain guard as the lift model; see its _clip for why."""
+    # the floor is inclusive: M = 0 is a legitimate operating point at the
+    # root of the disc and the model is perfectly well defined there, it is
+    # only M < 0 that breaks M**7.15
+    inside = (np.real(M) >= M_FLOOR) & (np.real(M) < M_CEIL)
+    return np.where(inside, M, np.where(np.real(M) <= M_FLOOR,
+                                        M_FLOOR, M_CEIL)), inside
 
 
 class DragModelCoefsComp(om.ExplicitComponent):
@@ -66,7 +77,7 @@ class DragModelCoefsComp(om.ExplicitComponent):
         return w, dw
 
     def compute(self, inputs, outputs):
-        M = inputs['M']
+        M, _ = _clip(inputs['M'])
         w, _ = self._weight(M)
 
         aD_lo = 17.0 - 23.4 * M          # p. 432
@@ -81,17 +92,19 @@ class DragModelCoefsComp(om.ExplicitComponent):
         outputs['delta_cd_M'] = K5 * x ** K6
 
     def compute_partials(self, inputs, partials):
-        M = inputs['M']
+        M, inside = _clip(inputs['M'])
         w, dw = self._weight(M)
 
         aD_lo = 17.0 - 23.4 * M
         aD_hi = 0.0
 
-        partials['alpha_D', 'M'] = (1.0 - w) * (-23.4) + (aD_hi - aD_lo) * dw
-        partials['K3', 'M'] = (K3_HIGH - K3_LOW) * dw
+        partials['alpha_D', 'M'] = inside * (
+            (1.0 - w) * (-23.4) + (aD_hi - aD_lo) * dw)
+        partials['K3', 'M'] = inside * (K3_HIGH - K3_LOW) * dw
 
         x = np.maximum(M - M_BREAK, 0.0)
-        partials['delta_cd_M', 'M'] = np.where(x > 0.0, K5 * K6 * x ** (K6 - 1.0), 0.0)
+        partials['delta_cd_M', 'M'] = inside * np.where(
+            x > 0.0, K5 * K6 * x ** (K6 - 1.0), 0.0)
 
 
 if __name__ == '__main__':

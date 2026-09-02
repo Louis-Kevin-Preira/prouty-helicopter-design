@@ -1,24 +1,26 @@
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "prouty-helicopter-design"
-version = "0.1.0"
-description = "OpenMDAO implementation of R.W. Prouty's helicopter preliminary design methods"
+name = "prouty"
+version = "0.3.0"
+description = "Prouty's Helicopter Performance, Stability and Control as OpenMDAO models"
 readme = "README.md"
-requires-python = ">=3.9"
-dependencies = [
-    "openmdao>=3.30",
-    "numpy>=1.22",
-]
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24", "openmdao>=3.30", "scipy>=1.10"]
 
 [project.optional-dependencies]
-validation = ["matplotlib>=3.5"]
-dev = ["pytest>=7.0"]
+dev = ["pytest>=7", "pillow>=10"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "slow: converges G2, several seconds to minutes per test",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
