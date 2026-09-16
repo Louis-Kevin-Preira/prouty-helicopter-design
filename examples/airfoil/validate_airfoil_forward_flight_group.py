@@ -3,6 +3,8 @@ Validation of AirfoilForwardFlightGroup against Prouty, Chapter 6,
 Figure 6.47 (p. 434) and the segment tables of p. 433-434.
 """
 
+import pathlib
+
 import numpy as np
 import openmdao.api as om
 import matplotlib
@@ -80,5 +82,6 @@ for a in ax:
 fig.suptitle('AirfoilForwardFlightGroup at M = 0.30 '
              '(compare Prouty Fig. 6.47, p. 434)')
 fig.tight_layout()
-fig.savefig('figures/fig647_check.png', dpi=140)
-print('\nfigure written to fig647_check.png')
+output = pathlib.Path(__file__).with_name('fig647_check.png')
+fig.savefig(output, dpi=140)
+print(f'\nfigure written to {output}')

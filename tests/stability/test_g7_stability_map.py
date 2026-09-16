@@ -14,7 +14,7 @@ from prouty.stability.long_stability_map_comp import (
     routh_map,
 )
 
-from test_stability_ch9_g7_longitudinal import EXAMPLE as MATRIX_EXAMPLE
+from test_g7_longitudinal import EXAMPLE as MATRIX_EXAMPLE
 
 EXAMPLE = dict(dM_dxdot=144.0, dM_dzdot=650.0, dZ_dxdot=49.0,
                dZ_dzdot=-287.0, G_W=20000.0, I_yy=40000.0, g=32.2)

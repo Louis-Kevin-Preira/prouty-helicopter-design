@@ -11,7 +11,7 @@ from prouty.stability.control_response_hover import (
     heaviside_step_response,
 )
 
-from test_stability_ch9_g4_two_dof import EXAMPLE as MATRIX
+from test_g4_two_dof import EXAMPLE as MATRIX
 
 # Recovered from Table 9.1 and Table 9.2 in hover:
 #   dX/dB1 = -rho A_b (Omega R)^2 (dCH/sigma/da1s)(da1s/dB1)

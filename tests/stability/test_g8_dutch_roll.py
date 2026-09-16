@@ -12,7 +12,7 @@ from prouty.stability.dutch_roll_approximations import (
 )
 from prouty.stability.lateral_matrix_ff_comp import LateralMatrixFFComp
 
-from test_stability_ch9_g8_lateral import EXAMPLE as FULL
+from test_g8_lateral import EXAMPLE as FULL
 
 INPUTS = ('dR_dydot', 'dR_dp', 'dR_dr', 'dN_dydot', 'dN_dp', 'dN_dr',
           'I_xx', 'I_zz', 'V')

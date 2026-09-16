@@ -13,7 +13,7 @@ from prouty.stability.lateral_stability_map_comp import (
     classify_lateral,
 )
 
-from test_stability_ch9_g8_lateral import EXAMPLE as FULL
+from test_g8_lateral import EXAMPLE as FULL
 
 MAP_INPUTS = ('dR_dydot', 'dR_dr', 'dN_dydot', 'dN_dr', 'I_xx', 'I_zz', 'g')
 

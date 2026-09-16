@@ -16,7 +16,7 @@ from prouty.stability.long_mode_approximations import (
     ShortPeriodMatrixComp,
 )
 
-from test_stability_ch9_g7_longitudinal import EXAMPLE as FULL
+from test_g7_longitudinal import EXAMPLE as FULL
 
 #: p. 624 works the three approximations on the 54 sq ft stabilizer, which is
 #: the Table 9.16 horizontal stabilizer column counted three times.

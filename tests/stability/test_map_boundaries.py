@@ -16,8 +16,8 @@ from prouty.stability.stability_map import (
     routh_conic,
 )
 
-from test_stability_ch9_g8_lateral import EXAMPLE as LATERAL
-from test_stability_ch9_g7_longitudinal import EXAMPLE as LONGITUDINAL
+from test_g8_lateral import EXAMPLE as LATERAL
+from test_g7_longitudinal import EXAMPLE as LONGITUDINAL
 
 #: p. 618's six printed coefficients, times 1e-6, in CONIC_TERMS order with
 #: dM/dzdot first and dM/dxdot second.

@@ -14,8 +14,8 @@ from prouty.stability.total_derivatives_hover_comp import (
     TotalDerivativesHoverComp,
 )
 
-from test_stability_ch9_g1_table92 import TABLE_9_2
-from test_stability_ch9_g1_table93 import TABLE_9_3
+from test_g1_table92 import TABLE_9_2
+from test_g1_table93 import TABLE_9_3
 
 # Table 9.4, pp. 571-573: (main rotor, tail rotor, total). A blank cell in the
 # book is None here. Transcribed row by row from the printed table.

@@ -18,3 +18,7 @@ coloring_files/
 
 # OpenMDAO output directories
 *_out/
+
+# examples/ scripts write their figures beside themselves; regenerate,
+# don't commit
+examples/**/*.png

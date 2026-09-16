@@ -7,6 +7,8 @@ V_tip = 650 ft/s, cutout 0.15 R, theta_1 = -10 deg, theta_0 = 17.5 deg,
 NACA 0012, sea level standard day.
 """
 
+import pathlib
+
 import numpy as np
 import openmdao.api as om
 
@@ -99,7 +101,7 @@ for key, val in p.check_totals(method='fd', compact_print=True,
           f"(fd {val['J_fd'].ravel()[0]:12.5e})")
 
 out = plot_figure_145(
-    p, 'fig145_complete.png',
+    p, pathlib.Path(__file__).with_name('fig145_complete.png'),
     title='Example helicopter main rotor, complete method, steps 1 to 21',
     annotations=case_annotations(p), B=p.get_val('B')[0])
 print('\nfigure written:', out)

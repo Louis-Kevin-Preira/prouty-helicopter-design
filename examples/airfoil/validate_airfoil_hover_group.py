@@ -3,6 +3,8 @@ Validation of AirfoilHoverGroup against Prouty, Chapter 6, Figure 6.43 (p. 427)
 and the anchor values quoted in the text (p. 428-433).
 """
 
+import pathlib
+
 import numpy as np
 import openmdao.api as om
 import matplotlib
@@ -85,5 +87,6 @@ for a in ax:
 fig.suptitle('AirfoilHoverGroup - generated NACA 0012 characteristics '
              '(compare Prouty Fig. 6.43, p. 427)')
 fig.tight_layout()
-fig.savefig('figures/fig643_check.png', dpi=140)
-print('\nfigure written to fig643_check.png')
+output = pathlib.Path(__file__).with_name('fig643_check.png')
+fig.savefig(output, dpi=140)
+print(f'\nfigure written to {output}')

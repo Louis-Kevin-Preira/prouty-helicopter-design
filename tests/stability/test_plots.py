@@ -28,9 +28,9 @@ from prouty.stability.plots import (
 from prouty.stability.stability_map import affine_coefficients
 
 from prouty.stability.lateral_matrix_ff_comp import LateralMatrixFFComp
-from test_stability_ch9_g5_control_response import rate_polynomials
-from test_stability_ch9_g7_longitudinal import EXAMPLE as LONGITUDINAL
-from test_stability_ch9_g8_lateral import EXAMPLE as LATERAL
+from test_g5_control_response import rate_polynomials
+from test_g7_longitudinal import EXAMPLE as LONGITUDINAL
+from test_g8_lateral import EXAMPLE as LATERAL
 
 #: The five stabilizer areas of Figure 9.15, as (dM/dzdot, dM/dxdot, label).
 AREAS = ((650.0, 144.0, '18'), (431.0, 186.0, '36'), (212.0, 228.0, '54'),

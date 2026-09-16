@@ -12,7 +12,7 @@ from openmdao.utils.assert_utils import assert_check_partials, assert_near_equal
 from prouty.stability.hover_chart_slopes_comp import HoverChartSlopesComp
 from prouty.stability.hover_derivatives_group import HoverDerivativesGroup
 
-from test_stability_ch9_g1_group import EXAMPLE, SCALARS
+from test_g1_group import EXAMPLE, SCALARS
 
 # Example helicopter main rotor at C_T/sigma = .086 (Chapter 1, p. 18).
 MAIN = dict(dCT_sigma_dlambda=0.4911, CT_sigma=0.086, sigma=0.085, a=6.0,

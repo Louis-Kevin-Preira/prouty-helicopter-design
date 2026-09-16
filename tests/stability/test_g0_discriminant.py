@@ -17,7 +17,7 @@ from prouty.stability.polynomial_discriminant_comp import (
     quartic_root_character,
 )
 
-from test_stability_ch9_g7_handling_qualities import sized
+from test_g7_handling_qualities import sized
 
 #: p. 618's unnamed boundary, walked across the five stabilizer areas.
 EXPECTED = {18.0: (67.92, 4), 36.0: (-4.244, 2), 54.0: (-6.464, 2),

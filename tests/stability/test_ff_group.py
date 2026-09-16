@@ -20,7 +20,7 @@ from prouty.stability.forward_flight_derivatives_group import (
 )
 from prouty.stability.total_derivatives_ff_comp import CONTRIBUTORS
 
-from test_stability_ch9_g3_table916 import IN_TABLE_9_20, TABLE_9_16
+from test_g3_table916 import IN_TABLE_9_20, TABLE_9_16
 
 #: Rows that inherit a value the book contradicts elsewhere.
 INHERITED = {

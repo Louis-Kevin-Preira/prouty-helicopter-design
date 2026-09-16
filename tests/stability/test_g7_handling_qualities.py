@@ -15,8 +15,8 @@ from prouty.stability.handling_qualities_ff import (
 from prouty.stability.long_matrix_ff_comp import LongMatrixFFComp
 from prouty.stability.long_mode_approximations import ShortPeriodMatrixComp
 
-from test_stability_ch9_g7_longitudinal import EXAMPLE as FULL
-from test_stability_ch9_g7_mode_approximations import HS
+from test_g7_longitudinal import EXAMPLE as FULL
+from test_g7_mode_approximations import HS
 
 #: Figure 9.21 and Table 9.21, evaluated on the five stabilizer areas.
 EXPECTED = {

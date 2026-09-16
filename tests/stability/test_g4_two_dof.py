@@ -14,7 +14,7 @@ from prouty.stability.hover_long_two_dof_matrix_comp import (
     HoverLongTwoDofMatrixComp,
 )
 
-from test_stability_ch9_g4_longitudinal import EXAMPLE as THREE_DOF
+from test_g4_longitudinal import EXAMPLE as THREE_DOF
 
 EXAMPLE = {name: THREE_DOF[name] for name in
            ('dX_dxdot', 'dX_dq', 'dM_dxdot', 'dM_dq', 'G_W', 'I_yy', 'g')}
@@ -70,7 +70,7 @@ def test_period_and_time_to_double_p600():
 
 def test_only_the_plunge_root_is_lost():
     """p. 600: the 2-DOF oscillation is within 2 % of the 3-DOF one."""
-    from test_stability_ch9_g4_longitudinal import run as run_three
+    from test_g4_longitudinal import run as run_three
 
     two = [m for m in describe_modes(run().get_val('char_coeffs')[0])
            if m.oscillatory][0]

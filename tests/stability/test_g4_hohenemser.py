@@ -67,7 +67,7 @@ def test_the_flapping_form_is_exact_not_an_approximation():
 
 def test_it_matches_the_two_dof_oscillation():
     """15.7 s against the 17.7 s of the full cubic: the inertia is worth 13 %."""
-    from test_stability_ch9_g4_two_dof import run as run_two_dof
+    from test_g4_two_dof import run as run_two_dof
 
     hohenemser = run().get_val('period')[0]
     exact = [m for m in describe_modes(

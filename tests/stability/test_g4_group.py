@@ -13,8 +13,8 @@ from prouty.stability.hover_stability_group import (
     HoverStabilityGroup,
 )
 
-from test_stability_ch9_g1_group import EXAMPLE as ROTOR_STATE
-from test_stability_ch9_g1_group import SCALARS as ROTOR_SCALARS
+from test_g1_group import EXAMPLE as ROTOR_STATE
+from test_g1_group import SCALARS as ROTOR_SCALARS
 
 # Everything pp. 596-605 print for the example helicopter.
 BOOK = {

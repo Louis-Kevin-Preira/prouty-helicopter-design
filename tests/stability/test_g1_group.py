@@ -16,7 +16,7 @@ from prouty.stability.hover_derivatives_group import (
     suffixed,
 )
 
-from test_stability_ch9_g1_table94 import TABLE_9_4
+from test_g1_table94 import TABLE_9_4
 
 # The main rotor state is the one recovered in the Table 9.1 anchors. The tail
 # rotor state is recovered the same way, from the two printed rows that involve
