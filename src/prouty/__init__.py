@@ -7,6 +7,7 @@ equation can be traced back to its source without leaving the code.
 
     prouty.airfoil          Chapter 6, airfoils for rotor blades
     prouty.forward_flight   Chapter 3, aerodynamics of forward flight
+    prouty.flapping         Chapter 7, rotor flapping characteristics
 
 Where the implementation departs from the printed text -- and it does, in
 about a dozen places -- the reasoning sits in the module and the measurement

@@ -11,9 +11,11 @@ and disagreements found inside it, are measured and recorded in
 
 | package | chapter | state |
 |---|---|---|
-| `prouty.hover` | 1, Aerodynamics of Vertical Flight | complete |
-| `prouty.airfoil` | 6, Airfoils for Rotor Blades | complete |
+| `prouty.hover` | 1, Aerodynamics of Hovering Flight | complete |
 | `prouty.forward_flight` | 3, Aerodynamics of Forward Flight | complete |
+| `prouty.airfoil` | 6, Airfoils for Rotor Blades | complete |
+| `prouty.flapping` | 7, Rotor Flapping Characteristics | complete |
+| `prouty.trim` | 8, The Helicopter in Trim | complete |
 
 ## Chapter 3 at a glance
 
@@ -63,6 +65,8 @@ helicopter and the trim will not converge from them. Give it a rotor.
 |---|---|
 | `docs/validation_forward_flight.md` | Chapter 3, five sections, 563 lines |
 | `docs/validation_airfoil.md` | Chapter 6, figure-by-figure anchors |
+| `docs/validation_flapping.md` | Chapter 7 |
+| `docs/validation_trim.md` | Chapter 8, fourteen entries |
 
 ## Validation
 
@@ -97,12 +101,14 @@ commit.
 ```
 src/prouty/
     hover/              Chapter 1, 32 modules
-    airfoil/            Chapter 6, 13 modules
     forward_flight/     Chapter 3, 58 modules
-    design/             Chapter 9, stub
-    performance/        Chapter 7, stub
-    stability/          Chapter 8, stub
-tests/                  153 tests, 26 marked slow
+    airfoil/            Chapter 6, 13 modules
+    flapping/           Chapter 7, 29 modules
+    trim/               Chapter 8, 39 modules
+    performance/        Chapter 4, stub
+    stability/          Chapter 9, stub
+    design/             Chapter 10, stub
+tests/                  653 tests, 26 marked slow
 docs/                   validation notes, one file per chapter
 validation/             figure-reproduction scripts
 scripts/                documented disagreements, kept runnable
