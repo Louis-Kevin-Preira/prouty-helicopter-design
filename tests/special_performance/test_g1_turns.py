@@ -77,14 +77,14 @@ def test_anchor_fig52_transient_near_017():
     """Transient boundary 'in the neighborhood of CT/sigma = 0.17' (p. 344)."""
     p = _run(ThrustCapabilityComp(num_nodes=3, boundary='transient'),
              mu=[0.1, 0.2, 0.3], band_fraction=[0., 0., 0.])
-    assert np.all(np.abs(p.get_val('CT_sigma_max') - 0.17) < 0.006)
+    assert np.all(np.abs(p.get_val('CT_sigma_limit') - 0.17) < 0.006)
 
 
 def test_fig52_level_band_edges_at_mu_050():
     """Right-hand labels: Low Drag ~0.077, High Drag ~0.038 at mu = 0.5 (p. 345)."""
     p = _run(ThrustCapabilityComp(num_nodes=2, boundary='level'),
              mu=[0.5, 0.5], band_fraction=[0., 1.])
-    assert_near_equal(p.get_val('CT_sigma_max'), [0.077, 0.038], 1e-6)
+    assert_near_equal(p.get_val('CT_sigma_limit'), [0.077, 0.038], 1e-6)
 
 
 def test_fig52_band_ordering():
@@ -92,7 +92,7 @@ def test_fig52_band_ordering():
     vals = {}
     for b in ('transient', 'steady_turn', 'level'):
         p = _run(ThrustCapabilityComp(num_nodes=10, boundary=b), mu=mu)
-        vals[b] = p.get_val('CT_sigma_max')
+        vals[b] = p.get_val('CT_sigma_limit')
     assert np.all(vals['transient'] >= vals['steady_turn'])
     assert np.all(vals['steady_turn'] >= vals['level'])
 

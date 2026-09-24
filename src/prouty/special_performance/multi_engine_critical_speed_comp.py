@@ -9,7 +9,7 @@ Chapter 5, "Generating the Deadman's Curve" pp. 357-358.
     V_sink: speed at which RD = V_LG (on the level power curve, Chapter 4)
     V_CR = V_sink / 2   FAA time delay (reference 5.14)
     V_CR = V_sink       military time delay ("undoubtedly higher"; p. 358)
-    h_CR = max(50 ft, h_lo), smoothed over +/- 1 ft
+    h_CR = max(50 ft, h_lo), quadratic fillet over +/- 1 ft (prouty.performance._smooth)
 
 RD is returned so that a BalanceComp can find V_sink once the Chapter 4
 power curve is connected.
@@ -19,6 +19,8 @@ power curve is connected.
 
 import numpy as np
 import openmdao.api as om
+
+from prouty.performance._smooth import smoothmin
 
 HP_TO_FT_LBF_PER_S = 550.0
 H_CR_MIN = 50.0        # ft
@@ -54,8 +56,7 @@ class MultiEngineCriticalSpeedComp(om.ExplicitComponent):
         k = 0.5 if self.options['time_delay'] == 'faa' else 1.0
         outputs['RD'] = HP_TO_FT_LBF_PER_S * (inputs['P_req'] - inputs['P_avail']) / inputs['GW']
         outputs['V_CR'] = k * inputs['V_sink']
-        d = inputs['h_lo'] - H_CR_MIN
-        outputs['h_CR'] = 0.5 * (inputs['h_lo'] + H_CR_MIN + np.sqrt(d ** 2 + SMOOTH ** 2))
+        outputs['h_CR'] = -smoothmin(-inputs['h_lo'], -H_CR_MIN, SMOOTH)[0]
 
     def compute_partials(self, inputs, J):
         W = inputs['GW']
@@ -63,5 +64,4 @@ class MultiEngineCriticalSpeedComp(om.ExplicitComponent):
         J['RD', 'P_req'] = HP_TO_FT_LBF_PER_S / W
         J['RD', 'P_avail'] = -HP_TO_FT_LBF_PER_S / W
         J['RD', 'GW'] = -HP_TO_FT_LBF_PER_S * dP / W ** 2
-        d = inputs['h_lo'] - H_CR_MIN
-        J['h_CR', 'h_lo'] = 0.5 * (1.0 + d / np.sqrt(d ** 2 + SMOOTH ** 2))
+        J['h_CR', 'h_lo'] = smoothmin(-inputs['h_lo'], -H_CR_MIN, SMOOTH)[1]

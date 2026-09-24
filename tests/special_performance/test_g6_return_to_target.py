@@ -7,6 +7,7 @@ import openmdao.api as om
 import pytest
 from openmdao.utils.assert_utils import assert_check_partials, assert_near_equal
 
+from prouty.special_performance.book_figures import FIG_5_17
 from prouty.special_performance import (TurnDecelerationComp, TurnDecelerationGroup,
                                         AutorotationLimitComp, HoverPowerScalingComp,
                                         ReturnToTargetComp, ReturnToTargetChainGroup)
@@ -14,8 +15,6 @@ from prouty.special_performance import (TurnDecelerationComp, TurnDecelerationGr
 KT = 1.6878
 V_GRID = np.array([26, 30, 35, 40, 50, 60, 70, 80, 90, 100, 115, 125.0]) * KT
 M = len(V_GRID)
-# Figure 5.17 (p. 370), read: 115 kt start, 20,000 lb, sea level
-FIG_5_17 = dict(t_total=23.0, t_turn=12.5, V_min_kt=27.0, x_max=1010.0, y_max=965.0)
 
 
 @pytest.fixture(scope='module')
@@ -136,8 +135,9 @@ def test_partials_components():
                               atol=1e-9, rtol=1e-9)
 
 
-def test_complex_step_partials_against_fd():
-    """Components whose partials are by complex step: compare with finite differences."""
+def test_analytic_partials_against_fd():
+    """Analytic partials (tangent through the Heun steps; implicit function theorem for
+    V_sw) against central finite differences. Akima tables are not complex-step safe."""
     n_tab = np.array([0.78, 1.13, 1.43, 1.62, 1.83, 1.92, 1.97, 1.99, 2.0, 2.01, 2.0, 1.99])
     vdot = np.array([-59.7, -53.7, -46.1, -39.4, -29.0, -21.9, -17.2, -13.9, -11.7, -10.2,
                      -8.6, -8.0])
@@ -153,5 +153,6 @@ def test_complex_step_partials_against_fd():
         for k, v in inputs.items():
             p.set_val(k, v)
         p.run_model()
-        data = p.check_partials(method='fd', step=1e-6, compact_print=True, out_stream=None)
-        assert_check_partials(data, atol=1e-3, rtol=1e-3)
+        data = p.check_partials(method='fd', form='central', step=1e-6, compact_print=True,
+                                out_stream=None)
+        assert_check_partials(data, atol=1e-5, rtol=1e-5)

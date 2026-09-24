@@ -30,8 +30,8 @@ FIG_5_2 = {
 class ThrustCapabilityComp(om.ExplicitComponent):
     """Maximum C_T/sigma(mu) from Fig. 5.2 and the load factor it allows.
 
-    CT_sigma_max = (1 - f) * upper(mu) + f * lower(mu)
-    n_max        = CT_sigma_max / CW_sigma          (n = T/GW, p. 340)
+    CT_sigma_limit = (1 - f) * upper(mu) + f * lower(mu)
+    n_max        = CT_sigma_limit / CW_sigma          (n = T/GW, p. 340)
     n_margin     = n_max - n                        (>= 0 as optimization constraint)
     Thrust-weighted solidity is to be used for non-constant chord (p. 344).
     """
@@ -48,14 +48,14 @@ class ThrustCapabilityComp(om.ExplicitComponent):
 
         self.add_input('mu', val=np.zeros(nn))
         self.add_input('band_fraction', val=0.5 * np.ones(nn))
-        self.add_input('CW_sigma', val=0.08 * np.ones(nn))
+        self.add_input('CW_sigma', val=0.083 * np.ones(nn))
         self.add_input('n', val=np.ones(nn))
-        self.add_output('CT_sigma_max', val=0.15 * np.ones(nn))
+        self.add_output('CT_sigma_limit', val=0.15 * np.ones(nn))
         self.add_output('n_max', val=np.ones(nn))
         self.add_output('n_margin', val=np.zeros(nn))
 
         ar = np.arange(nn)
-        self.declare_partials(['CT_sigma_max', 'n_max', 'n_margin'], ['mu', 'band_fraction'], rows=ar, cols=ar)
+        self.declare_partials(['CT_sigma_limit', 'n_max', 'n_margin'], ['mu', 'band_fraction'], rows=ar, cols=ar)
         self.declare_partials(['n_max', 'n_margin'], 'CW_sigma', rows=ar, cols=ar)
         self.declare_partials('n_margin', 'n', rows=ar, cols=ar, val=-1.)
 
@@ -69,7 +69,7 @@ class ThrustCapabilityComp(om.ExplicitComponent):
         up, lo, _, _ = self._edges(inputs['mu'])
         f = inputs['band_fraction']
         ct = (1. - f) * up + f * lo
-        outputs['CT_sigma_max'] = ct
+        outputs['CT_sigma_limit'] = ct
         outputs['n_max'] = ct / inputs['CW_sigma']
         outputs['n_margin'] = outputs['n_max'] - inputs['n']
 
@@ -79,8 +79,8 @@ class ThrustCapabilityComp(om.ExplicitComponent):
         ct = (1. - f) * up + f * lo
         dct_dmu = (1. - f) * dup + f * dlo
         dct_df = lo - up
-        J['CT_sigma_max', 'mu'] = dct_dmu
-        J['CT_sigma_max', 'band_fraction'] = dct_df
+        J['CT_sigma_limit', 'mu'] = dct_dmu
+        J['CT_sigma_limit', 'band_fraction'] = dct_df
         for out in ('n_max', 'n_margin'):
             J[out, 'mu'] = dct_dmu / cw
             J[out, 'band_fraction'] = dct_df / cw

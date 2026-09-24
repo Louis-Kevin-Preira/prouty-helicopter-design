@@ -41,7 +41,7 @@ class TurnDecelerationGroup(om.Group):
         self.add_subsystem('ceiling', ThrustCapabilityComp(
             num_nodes=nn, boundary=self.options['boundary']),
             promotes_inputs=['mu', 'band_fraction', 'CW_sigma'],
-            promotes_outputs=[('CT_sigma_max', 'CT_sigma')])
+            promotes_outputs=[('CT_sigma_limit', 'CT_sigma')])
         self.add_subsystem('balance', om.BalanceComp(
             'alpha_TPP', val=0.3 * np.ones(nn), units='rad', lhs_name='CQ_sigma',
             rhs_val=np.zeros(nn), lower=-0.5, upper=1.4), promotes=['*'])

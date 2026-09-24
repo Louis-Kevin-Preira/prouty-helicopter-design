@@ -4,6 +4,7 @@ import openmdao.api as om
 import pytest
 from openmdao.utils.assert_utils import assert_check_partials, assert_near_equal
 
+from prouty.special_performance.book_figures import FIG_5_16
 from prouty.special_performance import (TakeoffAccelerationDistanceComp, ClimboutDistanceComp,
                                         TakeoffDistanceGroup)
 
@@ -74,8 +75,6 @@ P_HOVER_OGE = 4209.0      # hp, HoverPerformanceGroup P_req (OGE)
 P_AVAIL = 4077.0          # hp, installed takeoff power (C4-27)
 T_MAX_IGE = 31700.0       # lb, IGE capability at Z/D = 0.25 (margin +235 hp at 31,000 lb)
 V_MAX = 204.0             # kt, zero of the linear law through acc_0 and G3 at 60 kt
-# Figure 5.16, read: obstacle [ft] -> (optimum rotation speed [kt], minimum distance [ft])
-FIG_5_16 = {50: (26.0, 325.0), 250: (30.0, 1150.0), 500: (38.0, 1850.0)}
 
 
 @pytest.fixture(scope='module')

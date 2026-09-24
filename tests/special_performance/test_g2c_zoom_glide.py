@@ -4,16 +4,13 @@ import openmdao.api as om
 import pytest
 from openmdao.utils.assert_utils import assert_check_partials, assert_near_equal
 
+from prouty.special_performance.book_figures import FIG_5_5
+from prouty.special_performance.book_figures import FIG_5_6 as _F56
+FIG_5_6 = {v: dd for v, dd in _F56.items() if dd[1] is not None}
 from prouty.special_performance import (ZoomClimbAngleComp, ZoomAltitudeGainComp,
                                         GlideDistanceComp, ZoomGlideGroup)
 
 KT = 1.6878
-
-# Figure 5.6 (p. 353), power failure at 160 kt, digitized: V_1 [kt] -> Delta_h, Delta_d [ft]
-FIG_5_6 = {70: (453, 2007), 80: (430, 2178), 90: (397, 2236), 100: (353, 2018),
-           120: (249, 1457), 140: (125, 785)}
-# Figure 5.5 (p. 351), rate of descent in autorotation, digitized: V [kt] -> R/D [ft/min]
-FIG_5_5 = {70: 1626, 80: 1605, 90: 1637, 100: 1711, 120: 2047, 140: 2358}
 
 
 def _run(system, **inputs):

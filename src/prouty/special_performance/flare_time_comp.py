@@ -32,7 +32,7 @@ class FlareTimeComp(om.ExplicitComponent):
         self.add_input('J', val=11735.0, units='slug*ft**2')
         self.add_input('Omega_0', val=21.67, units='rad/s')
         self.add_input('CW_sigma', val=0.083 * np.ones(nn))
-        self.add_input('CT_sigma_max', val=0.14 * np.ones(nn))
+        self.add_input('CT_sigma_max', val=0.1406 * np.ones(nn))
         self.add_input('P_OGE', val=1650.0 * np.ones(nn), units='hp')
         self.add_output('dt', val=np.ones(nn), units='s')
         self.declare_partials('dt', ['CW_sigma', 'CT_sigma_max', 'P_OGE'], rows=ar, cols=ar)

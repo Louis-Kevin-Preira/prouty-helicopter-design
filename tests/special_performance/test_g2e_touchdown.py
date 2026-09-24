@@ -5,13 +5,11 @@ import pytest
 from openmdao.utils.assert_utils import (assert_check_partials, assert_check_totals,
                                          assert_near_equal)
 
+from prouty.special_performance.book_figures import FIG_5_12
 from prouty.special_performance import (FlarePitchRateComp, FlareTimeComp, FlareAngleComp,
                                         FlareConditionsComp, FlareAutorotationGroup,
                                         TouchdownSpeedComp, MinTouchdownSpeedGroup)
 
-# Figure 5.12 (p. 362), digitized: flare angle [deg] -> mu_auto, for C_W/sigma = 0.05 and 0.10
-FIG_5_12 = {0.05: {10: .2245, 15: .156, 20: .1193, 30: .0837, 45: .0663},
-            0.10: {15: .205, 20: .154, 30: .1094, 45: .0901}}
 ROTOR = dict(sigma=0.0849, cd_bar=0.01)          # example helicopter, theta_1 = -10 deg
 # The two printed times, 0.8 s (p. 363) and 1.25 s (p. 362), are met together by
 # (C_T/sigma)_max = 0.1406 and hp_OGE = 1,643 hp with J = 11,735 slug ft^2.

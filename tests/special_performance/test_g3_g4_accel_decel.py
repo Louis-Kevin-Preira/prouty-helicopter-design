@@ -7,14 +7,12 @@ import openmdao.api as om
 import pytest
 from openmdao.utils.assert_utils import assert_check_partials, assert_near_equal
 
+from prouty.special_performance.book_figures import FIG_5_14, FIG_5_15
 from prouty.special_performance import (HoverAccelerationComp, AvailableTorqueComp,
                                         SmoothMinComp, MaxAccelerationGroup, WeightCoefComp,
                                         DecelerationForceComp, RotorForceLimitGroup,
                                         MaxDecelerationGroup)
 
-# Figures 5.14 and 5.15 (pp. 365-366), digitized: speed [kt] -> ft/s^2
-FIG_5_14 = {40: 22.9, 60: 18.1, 80: 14.0, 100: 10.2, 120: 6.6, 140: 3.3, 160: 0.0}
-FIG_5_15 = {40: 17.8, 60: 12.4, 80: 8.7, 100: 6.4, 120: 5.7, 140: 5.7, 160: 6.4}
 SPEEDS = np.array([40.0, 60.0, 80.0, 100.0, 120.0, 140.0, 160.0])
 ROTOR = dict(sigma=0.0849, R=30.0)
 
@@ -110,7 +108,7 @@ def test_autorotation_limit_starts_near_37_kt():
     p = _run(MaxDecelerationGroup(num_nodes=2), V=(np.array([37.0, 60.0]), 'kn'),
              acc_max=[24.0, 19.9], cd_bar=0.01 * np.ones(2), **ROTOR)
     lim, auto = p.get_val('decel_max'), p.get_val('decel')
-    assert lim[0] < min(24.0, auto[0])
+    assert lim[0] == pytest.approx(24.0)                     # acceleration-limited
     assert lim[1] == pytest.approx(auto[1], abs=0.3)            # autorotation-limited
 
 

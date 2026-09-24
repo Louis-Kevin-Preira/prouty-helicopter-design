@@ -8,18 +8,11 @@ import openmdao.api as om
 import pytest
 from openmdao.utils.assert_utils import assert_check_partials, assert_near_equal
 
+from prouty.special_performance.book_figures import EXAMPLE_ROTOR as REF, FIG_5_5, FIG_5_6
+FIG_5_6_DH = {v: dh for v, (dh, _) in FIG_5_6.items() if v in (60, 80, 100, 120, 140)}
 from prouty.special_performance import (AutorotationDescentGroup, BestAutorotationSpeedGroup,
                                         DescentSpeedStencilComp, SpeedNodesComp,
                                         ChainSplitComp, ZoomGlideChainGroup)
-
-# Example helicopter, Appendix A (same set as the Chapter 3 trim tests)
-REF = dict(V_tip=650.0, rho=0.002377, A_b=240.0, sigma=0.084883,
-           theta_1=np.deg2rad(-10.0), a=6.0, gamma=8.05033, R=30.0, GW=20000.0,
-           i_s=0.0, a1s=0.0, l_T_R=1.23, cd_bar=0.0100, delta_3=np.deg2rad(-30.0))
-# Figure 5.5 (p. 351), digitized: V [kt] -> R/D [ft/min]
-FIG_5_5 = {70: 1626, 80: 1605, 90: 1637, 100: 1711, 120: 2047, 140: 2358}
-# Figure 5.6 (p. 353), digitized: V_1 [kt] -> Delta_h [ft]
-FIG_5_6_DH = {60: 473, 80: 430, 100: 353, 120: 249, 140: 125}
 
 
 def _set(p, values):

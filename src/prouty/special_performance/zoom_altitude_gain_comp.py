@@ -35,7 +35,7 @@ class ZoomAltitudeGainComp(om.ExplicitComponent):
         ar = np.arange(nn)
         zero = np.zeros(nn, dtype=int)
         self.add_input('V_0', val=270.0, units='ft/s')
-        self.add_input('P_0', val=3000.0, units='hp')
+        self.add_input('P_0', val=4000.0, units='hp')
         self.add_input('V_1', val=150.0 * np.ones(nn), units='ft/s')
         self.add_input('P_1', val=1200.0 * np.ones(nn), units='hp')
         self.add_input('GW', val=20000.0, units='lbf')

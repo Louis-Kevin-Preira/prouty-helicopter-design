@@ -30,7 +30,7 @@ class ClimboutDistanceComp(om.ExplicitComponent):
         zero = np.zeros(nn, dtype=int)
         self.add_input('P_avail', val=4000.0, units='hp')
         self.add_input('P_level', val=3500.0 * np.ones(nn), units='hp')
-        self.add_input('GW', val=28000.0, units='lbf')
+        self.add_input('GW', val=20000.0, units='lbf')
         self.add_input('h', val=50.0, units='ft', desc='obstacle height')
         self.add_input('V_rot', val=40.0 * np.ones(nn), units='ft/s')
         self.add_input('x_acc', val=np.zeros(nn), units='ft')

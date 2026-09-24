@@ -7,7 +7,8 @@ Chapter 5, "Minimum Touchdown Speed" p. 361.
 
     alpha_TPP = min(theta_dot_max Delta_t, 45 deg)
 
-The min is smoothed over +/- 1 deg so the output stays differentiable.
+The min is the project's quadratic fillet (prouty.performance._smooth,
+C4-5) over +/- 1 deg, so the output stays differentiable.
 Example: 110 deg before the limit (printed 100, p. 362), hence 45 deg.
 
     theta_dot_max (nn,), dt (nn,) --> alpha_raw (nn,), alpha_TPP (nn,)
@@ -15,6 +16,8 @@ Example: 110 deg before the limit (printed 100, p. 362), hence 45 deg.
 
 import numpy as np
 import openmdao.api as om
+
+from prouty.performance._smooth import smoothmin
 
 ALPHA_MAX = np.deg2rad(45.0)
 SMOOTH = np.deg2rad(1.0)
@@ -38,14 +41,12 @@ class FlareAngleComp(om.ExplicitComponent):
 
     def compute(self, inputs, outputs):
         a = inputs['theta_dot_max'] * inputs['dt']
-        d = a - ALPHA_MAX
         outputs['alpha_raw'] = a
-        outputs['alpha_TPP'] = 0.5 * (a + ALPHA_MAX - np.sqrt(d ** 2 + SMOOTH ** 2))
+        outputs['alpha_TPP'] = smoothmin(a, ALPHA_MAX, SMOOTH)[0]
 
     def compute_partials(self, inputs, J):
         q, t = inputs['theta_dot_max'], inputs['dt']
-        d = q * t - ALPHA_MAX
-        s = 0.5 * (1.0 - d / np.sqrt(d ** 2 + SMOOTH ** 2))
+        s = smoothmin(q * t, ALPHA_MAX, SMOOTH)[1]
         J['alpha_raw', 'theta_dot_max'] = t
         J['alpha_raw', 'dt'] = q
         J['alpha_TPP', 'theta_dot_max'] = s * t

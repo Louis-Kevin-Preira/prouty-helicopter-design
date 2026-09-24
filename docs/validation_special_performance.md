@@ -332,3 +332,31 @@ about 3,900 hp at 160 kt, which is the 20,000 lb curve of Figure 4.38.
   at γ = 0° and 45° agree within 3 %.
 - T_max is an input; the Chapter 4 hover analysis gives the example's
   27,800 lb (margin −40 hp, docs/validation_performance.md).
+
+## Chapter conventions (close-out, block B)
+
+- Promoted names and defaults: `test_chapter5_consistency.py` promotes the
+  closed-form groups (G1, G2a, G2c, G2d, G2f, G5 distances, G7) together. It
+  forced three renames where one name carried two meanings: the Figure 5.2
+  ceiling is `CT_sigma_limit` (G1, G6), the zoom's conservative value is
+  `CT_sigma_max_zoom` (G2c), and `CT_sigma_max` stays the hover-chart maximum
+  (G2e, G2f, default 0.1406 — the value both printed times imply; 0.155 was the
+  tail rotor's). Defaults aligned: C_W/σ = 0.083, P_0 = 4,000 hp, GW = 20,000 lb.
+- Smoothing: min/max use the project's quadratic fillet
+  (`prouty.performance._smooth.smoothmin`, C4-5): flare angle limit (G2e),
+  h_CR (G2d), acceleration/deceleration capabilities (G3/G4). Branch blends use
+  the cubic smoothstep (`prouty.vertical._smooth`): powered-turn switch (G6).
+- Analytic partials everywhere. ReturnToTargetComp carries the sensitivities
+  through every Heun step (forward tangent); AutorotationLimitComp uses the
+  implicit function theorem. Both checked against central finite differences
+  (1e-5), since the Akima tables are not complex-step safe.
+- Interpolation: the G6 tables use InterpND Akima (SpeedTable), with the
+  derivatives with respect to the table values switched on as
+  MetaModelStructuredComp does, and delta_x = 1e-3 in Akima's slope weights:
+  without it the interpolant is not differentiable in the values where two
+  consecutive slopes are equal (the flat n_turn = 2.0 plateau), and finite
+  differences jump by orders of magnitude.
+- Validation data centralized in `book_figures.py` (tests and examples).
+- Examples: `examples/special_performance/` reproduces Figures 5.5, 5.10,
+  5.14-5.15, 5.16 and 5.17 (model against the digitized points).
+- Not modeled: Figure 5.3 (test data), Figure 5.13 (pilot opinion), aerobatics (G8).

@@ -25,7 +25,7 @@ class EquivalentHoverTimeComp(om.ExplicitComponent):
         self.add_input('J', val=11735.0, units='slug*ft**2')
         self.add_input('Omega', val=21.67, units='rad/s')
         self.add_input('CW_sigma', val=0.083)
-        self.add_input('CT_sigma_max', val=0.155)
+        self.add_input('CT_sigma_max', val=0.1406)
         self.add_input('P_OGE', val=2000.0, units='hp')
         self.add_output('t_equiv', val=1.0, units='s')
         self.declare_partials('t_equiv', '*')

@@ -6,13 +6,16 @@ Chapter 5, pp. 364-366: acceleration is limited by the tilted hover thrust
 at low speed and by excess power above; deceleration by the acceleration
 capability near hover and by rotor autorotation above about 37 kt.
 
-    c = (a + b - sqrt((a - b)^2 + eps^2)) / 2      eps = 0.5 ft/s^2
+    c = smoothmin(a, b, w = 0.5 ft/s^2)   quadratic fillet of prouty.performance._smooth
+    (C4-5): C1, never above min(a, b), w/4 below it at a = b
 
     a (nn,), b (nn,) --> c (nn,)       names set by options
 """
 
 import numpy as np
 import openmdao.api as om
+
+from prouty.performance._smooth import smoothmin
 
 EPS = 0.5      # ft/s^2
 
@@ -41,11 +44,11 @@ class SmoothMinComp(om.ExplicitComponent):
 
     def compute(self, inputs, outputs):
         a, b = inputs[self.options['a']], inputs[self.options['b']]
-        outputs[self.options['out']] = 0.5 * (a + b - np.sqrt((a - b) ** 2 + EPS ** 2))
+        outputs[self.options['out']] = smoothmin(a * np.ones_like(b), b, EPS)[0]
 
     def compute_partials(self, inputs, J):
         o = self.options
         a, b = inputs[o['a']], inputs[o['b']]
-        s = (a - b) / np.sqrt((a - b) ** 2 + EPS ** 2)
-        J[o['out'], o['a']] = 0.5 * (1.0 - s)
-        J[o['out'], o['b']] = 0.5 * (1.0 + s)
+        _, da, db = smoothmin(a * np.ones_like(b), b, EPS)
+        J[o['out'], o['a']] = da
+        J[o['out'], o['b']] = db
