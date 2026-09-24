@@ -267,6 +267,18 @@ about 3,900 hp at 160 kt, which is the 20,000 lb curve of Figure 4.38.
 - The figure itself sits below Figure 5.14 under 37 kt (25 against 28 ft/s² at
   20 kt), although p. 365 states they are equal there; not modeled.
 
+## G5 — Takeoff at high gross weight (pp. 366-368) — formula layer only
+
+- x_acc and t_acc of p. 367 checked against a numerical integration of the
+  linear acceleration law; x_CL = h/tan γ with the momentum R/C of p. 368.
+- Open: the power source. At 28,000 lb (Figure 5.16) the Chapter 4 level
+  flight trim does not converge below about 40 kt (high-speed induced
+  velocity of the Chapter 3 trim), and the closed-form force balance of G3
+  with the exact induced velocity still gives 15 ft/s² at 20 kt out of ground
+  effect at a weight that cannot hover OGE. P_level(V_rot), acc_0 and V_max
+  are inputs until this is decided; the optimum rotation speed and Figure 5.16
+  are not reproduced yet.
+
 ## G7 — Towing (pp. 371-372)
 
 - Tension/G.W. = −sin γ + √(sin²γ + (T_max/G.W.)² − 1), from the force balance

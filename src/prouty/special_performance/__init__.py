@@ -28,6 +28,8 @@
         Chapter 3 rotor, DecelerationForceComp)
     G4  MaxDecelerationGroup, maximum deceleration                   p. 365-366
         RotorForceLimitGroup(mode='decel'), SmoothMinComp
+    G5  TakeoffDistanceGroup, takeoff at high gross weight           p. 366-368
+        TakeoffAccelerationDistanceComp, ClimboutDistanceComp
     G7  TowingGroup, towing                                         p. 371-372
         TowlineTensionComp
 """
@@ -82,6 +84,10 @@ from prouty.special_performance.weight_coef_comp import WeightCoefComp
 from prouty.special_performance.deceleration_force_comp import DecelerationForceComp
 from prouty.special_performance.rotor_force_limit_group import RotorForceLimitGroup
 from prouty.special_performance.max_deceleration_group import MaxDecelerationGroup
+from prouty.special_performance.takeoff_acceleration_distance_comp import \
+    TakeoffAccelerationDistanceComp
+from prouty.special_performance.climbout_distance_comp import ClimboutDistanceComp
+from prouty.special_performance.takeoff_distance_group import TakeoffDistanceGroup
 
 __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'TurnEnergyPowerComp', 'FIG_5_2', 'ThrustCapabilityComp', 'TurnsPullupsGroup',
@@ -99,4 +105,5 @@ __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'SpeedNodesComp', 'ChainSplitComp', 'ZoomGlideChainGroup',
            'HoverAccelerationComp', 'AvailableTorqueComp', 'SmoothMinComp',
            'MaxAccelerationGroup', 'WeightCoefComp', 'DecelerationForceComp',
-           'RotorForceLimitGroup', 'MaxDecelerationGroup']
+           'RotorForceLimitGroup', 'MaxDecelerationGroup',
+           'TakeoffAccelerationDistanceComp', 'ClimboutDistanceComp', 'TakeoffDistanceGroup']
