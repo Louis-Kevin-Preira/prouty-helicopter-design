@@ -9,6 +9,8 @@
         DriveInertiaComp, KineticEnergyTimeComp, RotorSpeedDecayComp
     G2f AutorotativeIndicesGroup, autorotative indices              p. 363-364
         EquivalentHoverTimeComp, AutorotativeIndexComp
+    G7  TowingGroup, towing                                         p. 371-372
+        TowlineTensionComp
 """
 
 from prouty.special_performance.load_factor_comp import LoadFactorComp
@@ -26,10 +28,12 @@ from prouty.special_performance.rotor_speed_decay_group import RotorSpeedDecayGr
 from prouty.special_performance.equivalent_hover_time_comp import EquivalentHoverTimeComp
 from prouty.special_performance.autorotative_index_comp import AutorotativeIndexComp
 from prouty.special_performance.autorotative_indices_group import AutorotativeIndicesGroup
+from prouty.special_performance.towline_tension_comp import TowlineTensionComp
+from prouty.special_performance.towing_group import TowingGroup
 
 __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'TurnEnergyPowerComp', 'FIG_5_2', 'ThrustCapabilityComp', 'TurnsPullupsGroup',
            'EffectiveWeightComp', 'SteadyTurnPowerGroup',
            'DriveInertiaComp', 'KineticEnergyTimeComp', 'RotorSpeedDecayComp',
            'RotorSpeedDecayGroup', 'EquivalentHoverTimeComp', 'AutorotativeIndexComp',
-           'AutorotativeIndicesGroup']
+           'AutorotativeIndicesGroup', 'TowlineTensionComp', 'TowingGroup']

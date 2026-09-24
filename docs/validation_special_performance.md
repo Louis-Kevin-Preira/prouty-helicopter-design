@@ -144,3 +144,14 @@ of Chapter 3, not the 3,170 hp of Figure 4.38.
   (C_T/σ)_max, which come from Chapters 1 and 4; not anchored here. Checked
   against t_KE: t_equiv = t_KE [1 − (C_W/σ)/(0.8 (C_T/σ)_max)] at P_0 = P_OGE.
 - Figure 5.13 (pilot opinion) is not implemented.
+
+## G7 — Towing (pp. 371-372)
+
+- Tension/G.W. = −sin γ + √(sin²γ + (T_max/G.W.)² − 1), from the force balance
+  at hover (checked: the rotor thrust holding the computed tension is T_max).
+- p. 372: T_max = 27,800 lb (hover OGE, sea level, Figure 4.35), 17,000 lb, flat
+  towline: 21,995 lb against 22,000 lb printed.
+- Figure 5.18 is this closed form; curve ends for T_max/G.W. = 1.2 and 2.4
+  at γ = 0° and 45° agree within 3 %.
+- T_max is an input; the Chapter 4 hover analysis gives the example's
+  27,800 lb (margin −40 hp, docs/validation_performance.md).
