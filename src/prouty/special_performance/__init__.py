@@ -11,6 +11,9 @@
         EquivalentHoverTimeComp, AutorotativeIndexComp
     G2c ZoomGlideGroup, zoom maneuver and glide distance            p. 351-352
         ZoomClimbAngleComp, ZoomAltitudeGainComp, GlideDistanceComp
+    G2d HeightVelocityGroup, height-velocity diagram                p. 352-358
+        LowHoverHeightComp, MinPowerSpeedComp, CriticalSpeedComp,
+        MultiEngineCriticalSpeedComp, HighHoverHeightComp, HVBoundaryComp
     G7  TowingGroup, towing                                         p. 371-372
         TowlineTensionComp
 """
@@ -36,6 +39,14 @@ from prouty.special_performance.zoom_climb_angle_comp import ZoomClimbAngleComp
 from prouty.special_performance.zoom_altitude_gain_comp import ZoomAltitudeGainComp
 from prouty.special_performance.glide_distance_comp import GlideDistanceComp
 from prouty.special_performance.zoom_glide_group import ZoomGlideGroup
+from prouty.special_performance.low_hover_height_comp import LowHoverHeightComp
+from prouty.special_performance.min_power_speed_comp import MinPowerSpeedComp
+from prouty.special_performance.critical_speed_comp import CriticalSpeedComp
+from prouty.special_performance.multi_engine_critical_speed_comp import \
+    MultiEngineCriticalSpeedComp
+from prouty.special_performance.high_hover_height_comp import HighHoverHeightComp
+from prouty.special_performance.hv_boundary_comp import HVBoundaryComp
+from prouty.special_performance.height_velocity_group import HeightVelocityGroup
 
 __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'TurnEnergyPowerComp', 'FIG_5_2', 'ThrustCapabilityComp', 'TurnsPullupsGroup',
@@ -43,4 +54,7 @@ __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'DriveInertiaComp', 'KineticEnergyTimeComp', 'RotorSpeedDecayComp',
            'RotorSpeedDecayGroup', 'EquivalentHoverTimeComp', 'AutorotativeIndexComp',
            'AutorotativeIndicesGroup', 'TowlineTensionComp', 'TowingGroup',
-           'ZoomClimbAngleComp', 'ZoomAltitudeGainComp', 'GlideDistanceComp', 'ZoomGlideGroup']
+           'ZoomClimbAngleComp', 'ZoomAltitudeGainComp', 'GlideDistanceComp', 'ZoomGlideGroup',
+           'LowHoverHeightComp', 'MinPowerSpeedComp', 'CriticalSpeedComp',
+           'MultiEngineCriticalSpeedComp', 'HighHoverHeightComp', 'HVBoundaryComp',
+           'HeightVelocityGroup']

@@ -42,7 +42,10 @@ the coherent form gives half, 328 hp and 115 hp.
 **Check.** The single-engine form (p. 354) is linear in (C_W/σ)/0.2, which is
 what the kinetic energy balance gives: thrust ∝ Ω², so Ω_f²/Ω₀² = (C_W/σ)/0.2.
 
-**Decision.** Linear form by default; `book` option for the square root.
+**Decision.** Linear form by default; `LowHoverHeightComp(engines='multi', book=True)`
+for the square root.
+
+**Tests.** `tests/special_performance/test_g2d_height_velocity.py::test_c5_3_book_option`.
 
 ## C5-4 — Pitch rate in the example turn (G1, p. 342)
 
@@ -167,6 +170,27 @@ about 3,900 hp at 160 kt, which is the 20,000 lb curve of Figure 4.38.
   Chapter 4 chain yet: P_0, P_1 (Chapter 4) and R/D (G2b) are inputs, to be
   connected when G2b is done. Best autorotation speed for glide (about 87 kt
   on Figure 5.6) will be checked then.
+
+## G2d — Height-velocity diagram (pp. 352-358)
+
+- Figures 5.8 and 5.9 digitized on clean crops supplied by the user (grid and
+  tick calibration). Figure 5.9 top: ten straight lines V_min = a + b V_CR
+  fitted with residuals below 0.4 kt; C_L/sigma = 2(C_T/sigma)/mu_min^2 read on
+  the figure's box, a and b interpolated in C_L/sigma. Figure 5.9 bottom:
+  h_hi(V_CR), 13 (FAA) and 15 (military) points. Figure 5.8: both branches
+  parametrized by the height fraction (smooth at the nose).
+- V_min: quartic of p. 357 checked against the power expression of p. 356
+  (derivative zero, true minimum). No printed V_min.
+- Figure 5.10 (sea level, 20,000 lb): noses at 80 kt (FAA) and 101 kt
+  (military), tops at 1,330 and 1,390 ft. Figure 5.9 bottom gives h_hi within
+  3 % at those speeds. Both noses imply V_min ≈ 82-83 kt through Figure 5.9
+  top; the energy method with f = 20 ft², C_d = 0.01, e = 0.8 gives 84.3 kt,
+  hence V_CR = 87 / 105 kt (+9 % / +4 %) since dV_CR/dV_min ≈ 2.8.
+- Multiengine: V_CR = V_sink/2 (FAA) or V_sink (military), h_CR = max(50 ft, h_lo)
+  smoothed over ±1 ft. The book gives no h_hi for one engine out; Figure 5.9
+  bottom is used (assumption). V_sink needs the Chapter 4 power curve:
+  `MultiEngineCriticalSpeedComp.RD` is ready for a BalanceComp.
+- High-speed portion of Figure 5.7: no method in the book (p. 358), not modeled.
 
 ## G7 — Towing (pp. 371-372)
 
