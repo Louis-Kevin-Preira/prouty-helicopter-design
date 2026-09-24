@@ -5,6 +5,7 @@ OpenMDAO components and groups with analytic partials throughout. Page and
 figure references are carried in the module that uses them, so that any
 equation can be traced back to its source without leaving the code.
 
+    prouty.vertical         Chapter 2, aerodynamics of vertical flight
     prouty.airfoil          Chapter 6, airfoils for rotor blades
     prouty.forward_flight   Chapter 3, aerodynamics of forward flight
     prouty.flapping         Chapter 7, rotor flapping characteristics

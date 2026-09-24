@@ -31,6 +31,7 @@ from prouty.hover.twist_dist_comp import TwistDistComp
 from prouty.hover.local_mach_comp import LocalMachComp
 from prouty.hover.pitch_comp import PitchComp
 from prouty.hover.inflow_ratio_comp import InflowRatioComp
+from prouty.hover.climb_inflow_ratio_comp import ClimbInflowRatioComp
 from prouty.hover.angle_of_attack_comp import AngleOfAttackComp
 from prouty.hover.thrust_loading_comp import ThrustLoadingComp
 from prouty.hover.integration_weights_comp import IntegrationWeightsComp
@@ -54,7 +55,7 @@ __all__ = [
     "ThrustGroup", "TorqueGroup", "EmpiricalCorrectionsGroup",
     "RotorPerformanceGroup",
     "RotorGeometryComp", "AtmosphereComp", "BladeGridComp", "ChordDistComp",
-    "TwistDistComp", "LocalMachComp", "PitchComp", "InflowRatioComp",
+    "TwistDistComp", "LocalMachComp", "PitchComp", "InflowRatioComp", "ClimbInflowRatioComp",
     "AngleOfAttackComp", "ThrustLoadingComp", "IntegrationWeightsComp",
     "TipLossComp", "IntegralComp", "ProfileTorqueLoadingComp",
     "InducedTorqueLoadingComp", "WakeRotationComp", "DiscLoadingComp",

@@ -39,12 +39,15 @@ class BladeElementGroup(om.Group):
         self.options.declare('twist_law', values=('linear', 'ideal'),
                              default='linear')
         self.options.declare('maxiter', types=int, default=20)
+        self.options.declare('flight', values=('hover', 'climb'), default='hover',
+                             desc="see InflowGroup; 'climb' adds V_c, Chapter 2 p. 96")
 
     def setup(self):
         nn = self.options['num_nodes']
 
         self.add_subsystem('inflow', InflowGroup(
-            num_nodes=nn, twist_law=self.options['twist_law']), promotes=['*'])
+            num_nodes=nn, twist_law=self.options['twist_law'],
+            flight=self.options['flight']), promotes=['*'])
         self.add_subsystem('airfoil', AirfoilHoverGroup(num_nodes=nn),
                            promotes=['*'])
 

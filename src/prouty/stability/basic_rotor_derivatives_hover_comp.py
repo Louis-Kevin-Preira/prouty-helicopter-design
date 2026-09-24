@@ -126,6 +126,13 @@ class BasicRotorDerivativesHoverComp(om.ExplicitComponent):
         ``'exact'`` restores the factor and agrees with ``RateFlappingComp``.
         For the example helicopter the two differ by 0.9 %. See entry C9-2 of
         ``docs/validation_stability.md``.
+    thrust_damping : {'table', 'external'}
+        Where ``dCT_sigma_dlambda`` comes from. ``'table'``, the default, is the
+        Table 9.1 equation above. ``'external'`` takes it from the input
+        ``dCT_sigma_dlambda_ext`` and passes it through unchanged, so that the
+        thrust damping of Chapter 2 (``prouty.vertical.ThrustDampingComp``,
+        p. 102, same equation in hover, exact momentum in climb and descent)
+        feeds the heave derivatives. See C2-7 in ``docs/validation_vertical.md``.
 
     Example helicopter, main rotor
     ------------------------------
@@ -155,6 +162,8 @@ class BasicRotorDerivativesHoverComp(om.ExplicitComponent):
         self.options.declare('num_nodes', types=int, default=1)
         self.options.declare('rate_flapping', values=('table', 'exact'),
                              default='table')
+        self.options.declare('thrust_damping', values=('table', 'external'),
+                             default='table')
 
     def setup(self):
         nn = self.options['num_nodes']
@@ -183,6 +192,9 @@ class BasicRotorDerivativesHoverComp(om.ExplicitComponent):
                        desc='Induced velocity ratio in hover.')
         self.add_input('a_0', val=np.zeros(nn), units='rad',
                        desc='Coning angle.')
+        if self._external_damping:
+            self.add_input('dCT_sigma_dlambda_ext', val=np.full(nn, 0.49),
+                           desc='Thrust damping from Chapter 2 (G4).')
 
         for name, (per_node, scalar) in self._all_outputs():
             self.add_output(name, val=np.zeros(nn), units=UNITS[name])
@@ -191,12 +203,24 @@ class BasicRotorDerivativesHoverComp(om.ExplicitComponent):
             if scalar:
                 self.declare_partials(name, scalar, rows=ar, cols=zeros)
 
+    @property
+    def _external_damping(self):
+        return self.options['thrust_damping'] == 'external'
+
+    def _dependencies(self):
+        """DEPENDENCIES, with the thrust damping rerouted when external."""
+        deps = dict(DEPENDENCIES)
+        if self._external_damping:
+            deps['dCT_sigma_dlambda'] = (['dCT_sigma_dlambda_ext'], [])
+        return deps
+
     def _all_outputs(self):
         """(name, dependencies) for computed outputs, then mirrored ones."""
-        for name, deps in DEPENDENCIES.items():
-            yield name, deps
+        deps = self._dependencies()
+        for name, dep in deps.items():
+            yield name, dep
         for name, (source, _) in MIRRORS.items():
-            yield name, DEPENDENCIES[source]
+            yield name, deps[source]
 
     def _state(self, inputs):
         """Quantities shared by compute and compute_partials."""
@@ -221,7 +245,9 @@ class BasicRotorDerivativesHoverComp(om.ExplicitComponent):
         outputs['d_a1s_d_mu'] = (8.0 / 3.0 * inputs['theta_0']
                                  + 2.0 * inputs['theta_1'] - 2.0 * nu)
         outputs['d_b1s_d_mu'] = 4.0 / 3.0 * inputs['a_0']
-        outputs['dCT_sigma_dlambda'] = 1.0 / s['den']
+        outputs['dCT_sigma_dlambda'] = (inputs['dCT_sigma_dlambda_ext']
+                                        if self._external_damping
+                                        else 1.0 / s['den'])
         outputs['dCQ_sigma_dlambda'] = -0.25 * inputs['a'][0] * (s['theta_75']
                                                                 - 2.0 * nu)
         outputs['d_a1s_dq'] = -(s['c16'] + s['kap']) * s['damp'] / Om
@@ -251,11 +277,14 @@ class BasicRotorDerivativesHoverComp(om.ExplicitComponent):
         J['d_a1s_d_mu', 'v_1_over_Omega_R'] = -2.0 * one
         J['d_b1s_d_mu', 'a_0'] = 4.0 / 3.0 * one
 
-        d_inv = -1.0 / den ** 2
-        J['dCT_sigma_dlambda', 'a'] = d_inv * (-8.0 / a ** 2)
-        J['dCT_sigma_dlambda', 'sigma'] = d_inv / (2.0 * np.sqrt(2.0 * sig * CTs))
-        J['dCT_sigma_dlambda', 'CT_sigma'] = (d_inv * -0.5 * np.sqrt(0.5 * sig)
-                                              * CTs ** -1.5)
+        if self._external_damping:
+            J['dCT_sigma_dlambda', 'dCT_sigma_dlambda_ext'] = one
+        else:
+            d_inv = -1.0 / den ** 2
+            J['dCT_sigma_dlambda', 'a'] = d_inv * (-8.0 / a ** 2)
+            J['dCT_sigma_dlambda', 'sigma'] = d_inv / (2.0 * np.sqrt(2.0 * sig * CTs))
+            J['dCT_sigma_dlambda', 'CT_sigma'] = (d_inv * -0.5 * np.sqrt(0.5 * sig)
+                                                  * CTs ** -1.5)
 
         J['dCQ_sigma_dlambda', 'a'] = -0.25 * (s['theta_75']
                                                - 2.0 * inputs['v_1_over_Omega_R'])
@@ -305,7 +334,8 @@ class BasicRotorDerivativesHoverComp(om.ExplicitComponent):
                                     0.75 * inputs['A_b'][0] * inputs['rho']
                                     * inputs['R'][0] * V ** 2 * a / gam)
 
+        deps = self._dependencies()
         for name, (source, sign) in MIRRORS.items():
-            per_node, scalar = DEPENDENCIES[source]
+            per_node, scalar = deps[source]
             for inp in per_node + scalar:
                 J[name, inp] = sign * J[source, inp]

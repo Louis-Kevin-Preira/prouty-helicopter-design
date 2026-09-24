@@ -13,6 +13,7 @@ Organised by the chapter/topic it exercises, mirroring `src/prouty/`:
 ```
 examples/
     hover/            Chapter 1
+    vertical/          Chapter 2
     airfoil/           Chapter 6
     forward_flight/    Chapter 3
 ```

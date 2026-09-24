@@ -67,6 +67,10 @@ GEOMETRY_DEFAULTS = {
 #: The two entries p. 564 sends to the Chapter 1 hover charts.
 CHART_ENTRIES = ('dCT_sigma_dtheta0', 'dCQ_sigma_dtheta0')
 
+#: Table 9.1 thrust damping of the example helicopter, p. 564: the defaults
+#: of the two inputs promoted when thrust_damping='external'.
+DAMPING_DEFAULTS = {'dCT_sigma_dlambda_M': 0.49, 'dCT_sigma_dlambda_T': 0.44}
+
 #: Inputs HoverChartSlopesComp shares with the Table 9.1 component.
 SLOPE_INPUTS = ('CT_sigma', 'sigma', 'a')
 
@@ -144,6 +148,11 @@ class HoverDerivativesGroup(om.Group):
         with the design. That costs accuracy against the printed table: 7 %
         high on thrust and 18 % low on torque. See that component's docstring
         for the numbers.
+    thrust_damping : {'table', 'external'}
+        Passed to both ``BasicRotorDerivativesHoverComp``. ``'external'``
+        promotes their ``dCT_sigma_dlambda_ext`` as ``dCT_sigma_dlambda_M`` and
+        ``dCT_sigma_dlambda_T``, to be fed by the Chapter 2 thrust damping
+        (``prouty.vertical.ThrustDampingComp``); see C2-7.
 
     Two rows differ from the book
     -----------------------------
@@ -159,10 +168,13 @@ class HoverDerivativesGroup(om.Group):
                              default='table')
         self.options.declare('derivative_source', values=('table', 'model'),
                              default='table')
+        self.options.declare('thrust_damping', values=('table', 'external'),
+                             default='table')
 
     def setup(self):
         nn = self.options['num_nodes']
-        basic = dict(num_nodes=nn, rate_flapping=self.options['rate_flapping'])
+        basic = dict(num_nodes=nn, rate_flapping=self.options['rate_flapping'],
+                     thrust_damping=self.options['thrust_damping'])
 
         main_inputs = factors_of([t for terms in MAIN_ROWS.values()
                                   for t in terms])
@@ -198,6 +210,9 @@ class HoverDerivativesGroup(om.Group):
                                         val=np.full(nn, 0.085))
                 self.set_input_defaults(f'sigma{suffix}', val=0.085)
                 self.set_input_defaults(f'a{suffix}', val=6.0, units='1/rad')
+        if self.options['thrust_damping'] == 'external':
+            for name, value in DAMPING_DEFAULTS.items():
+                self.set_input_defaults(name, val=np.full(nn, value))
         for name, (value, units) in GEOMETRY_DEFAULTS.items():
             scalar = name.startswith(('A_b', 'R_'))
             self.set_input_defaults(
@@ -214,10 +229,15 @@ class HoverDerivativesGroup(om.Group):
                          and name not in EXPOSED_BASIC_OUTPUTS]
         promoted = [name for name in table_inputs if name not in from_upstream]
 
+        basic_inputs = BASIC_INPUTS
+        if self.options['thrust_damping'] == 'external':
+            basic_inputs += ('dCT_sigma_dlambda_ext',)
         self.add_subsystem(
             f'{rotor}_basic', basic_comp,
             promotes_inputs=[(name, suffixed(name, suffix))
-                             for name in BASIC_INPUTS],
+                             if name != 'dCT_sigma_dlambda_ext'
+                             else (name, f'dCT_sigma_dlambda{suffix}')
+                             for name in basic_inputs],
             promotes_outputs=[(name, f'{name}{suffix}')
                               for name in EXPOSED_BASIC_OUTPUTS])
 

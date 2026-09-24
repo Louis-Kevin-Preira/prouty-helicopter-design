@@ -53,6 +53,12 @@ The Newton sits above the NonlinearBlockGS that closes the inflow and airfoil
 cycle inside G1; the inner solver is cheap because the lift curve slope depends
 on Mach number alone.
 
+Vertical flight (Chapter 2, pp. 95-97). flight = 'climb' adds the input V_c
+(rate of climb, < 0 in low descent) to the inflow of step 5 (p. 96). The
+torque of step 14 then carries the climb power ("inflow drag", p. 95), and the
+empirical corrections of steps 16-20, fitted in hover, are applied unchanged.
+Default 'hover': the Chapter 1 procedure, untouched.
+
     theta_0 or T_target, plus geometry and atmosphere
         --> HoverRotorGroup --> CT, CQ, T, power_hp, Q, FM, power_loading
 """
@@ -90,6 +96,8 @@ class HoverRotorGroup(om.Group):
         self.options.declare('solidity',
                              values=('geometric', 'thrust_weighted'),
                              default='geometric')
+        self.options.declare('flight', values=('hover', 'climb'), default='hover',
+                             desc="'climb' adds V_c, Chapter 2 p. 96")
         self.options.declare('theta_0_bounds', types=tuple, default=(0.0, 25.0),
                              desc='collective bounds used in trim mode, deg')
 
@@ -102,7 +110,8 @@ class HoverRotorGroup(om.Group):
             twist_reference=self.options['twist_reference']), promotes=['*'])
 
         self.add_subsystem('blade_element', BladeElementGroup(
-            num_nodes=nn, twist_law=self.options['twist_law']), promotes=['*'])
+            num_nodes=nn, twist_law=self.options['twist_law'],
+            flight=self.options['flight']), promotes=['*'])
 
         self.add_subsystem('thrust', ThrustGroup(
             num_nodes=nn,

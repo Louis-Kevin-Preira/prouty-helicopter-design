@@ -88,3 +88,11 @@ C_Q, so the choice of curve is not critical. `approximate` is the default.
 - Step 13 asks for the profile torque integral from 0, not from the cutout.
   The grid starts at the cutout and no hub drag model exists; the r^3 weighting
   makes the missing span worth 0.05 % of C_Q0.
+
+---
+
+## Note — vertical climb (Chapter 2)
+
+`HoverRotorGroup(flight='climb')` adds the rate of climb V_c to step 5 with the
+equation of Chapter 2, p. 96 (`ClimbInflowRatioComp`). Default 'hover': nothing
+changes in this chapter. See C2-11 in `docs/validation_vertical.md`.

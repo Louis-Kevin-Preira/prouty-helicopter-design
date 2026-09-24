@@ -2478,3 +2478,12 @@ A rotor contribution that is not destabilising means stability never vanishes;
 the component warns and returns zero rather than a negative or infinite load
 factor. Setting it to zero recovers p. 622's contrast with the aeroplane, whose
 angle-of-attack stability is "nearly invariant" -- a horizontal line.
+
+---
+
+## Note — thrust damping from Chapter 2
+
+`thrust_damping='external'` (on `BasicRotorDerivativesHoverComp` and
+`HoverDerivativesGroup`) replaces the Table 9.1 dCT/σ/dλ by the Chapter 2 thrust
+damping of p. 102 (`prouty.vertical.ThrustDampingComp`). Default `'table'`,
+nothing changes for this chapter. See C2-7 in `docs/validation_vertical.md`.
