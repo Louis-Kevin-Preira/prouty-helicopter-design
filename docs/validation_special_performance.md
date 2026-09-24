@@ -15,7 +15,10 @@ the first reading; their groups are not coded yet.
 **Check.** Referring the tail rotor energy to main rotor speed needs the square
 of the speed ratio: J = 11,600 + (100/21.67)² 25 + 20 ≈ 12,150 slug·ft².
 
-**Decision.** Squared ratio by default; `book` option for the printed form.
+**Decision.** Squared ratio by default; `DriveInertiaComp(inertia_ratio='book')`
+for the printed form. With either, t_KE = 1.25 s at 4,000 hp (printed 1.2 s).
+
+**Tests.** `tests/special_performance/test_g2a_g2f_rotor_energy.py::test_anchor_p348_inertia_book_and_coherent`.
 
 ## C5-2 — Time for a 180° turn (G1, p. 343)
 
@@ -91,6 +94,28 @@ the turn power is optimistic; `ThrustCapabilityComp.n_margin` flags them.
 **Tests.** `::test_turn_power_is_level_power_at_effective_weight`,
 `::test_turn_power_below_print_c5_6`.
 
+**Status: correction designed, paused (Sept 2026).** Target is the chart method
+of Chapter 3, not the 3,170 hp of Figure 4.38.
+
+- Chart method at 24,000 lb, mu = 0.30 (p. 229 uses the top chart of the first
+  plate for collective): C_T/sigma = 0.0996, X = 0.187, theta_0 = 16° on the X
+  chart of p. 262 (read by the user), C_Q/sigma ≈ 0.009 on the torque chart,
+  against 0.0035 at 20,000 lb. The inflow chart of p. 263 gives 18° at
+  lambda' = −0.0253: the two plates disagree near stall; p. 229 prescribes p. 262.
+- Twist (p. 230): the charts are for −5°; stall limit lines and torque curve
+  knees move by ΔC_T/sigma ≈ −0.003 (theta_1 + 5°), i.e. +0.015 for the example
+  (−10°). Our numerical rotor stalls hard on the chart rotor and barely on the
+  example rotor, as this shift predicts.
+- Validated design: `StallTorqueIncrementComp`,
+  ΔC_Q/sigma(mu, C_T/sigma_eff, X) = C_Q/sigma chart − C_Q/sigma closed form on
+  the chart rotor, smooth floor at 0, Akima 3-D table from the X and C_Q/sigma
+  charts of pp. 258-266 (mu = 0.20-0.40, label-anchored, user spot checks);
+  C_T/sigma_eff = C_T/sigma + 0.003 (theta_1 + 5°) − shift for an airfoil
+  stall angle Δalpha_stall (input, default 0, p. 230); ΔP added to main rotor
+  power before the drive losses; `ForwardFlightPowerGroup(stall=False)`.
+- Expected: no change at 20,000 lb (C_T/sigma_eff = 0.068); roughly +250 to
+  +300 hp at the rotor at 24,000 lb.
+
 ---
 
 ## G1 — Turns and pullups (pp. 340-346)
@@ -103,3 +128,19 @@ the turn power is optimistic; `ThrustCapabilityComp.n_margin` flags them.
   μ = 0.1-0.3 (p. 344); level edges 0.077 / 0.038 at μ = 0.5 match the side
   labels; transient ≥ steady turns ≥ level everywhere.
 - Figure 5.3 (test data) is not implemented.
+
+## G2a — Rotor speed decay (pp. 348-350)
+
+- J: see C5-1. t_KE = ½JΩ₀²/(550 hp₀) = 1.25 s at 4,000 hp (printed 1.2 s).
+- Ω/Ω₀ = 1/(1 + f t/2t_KE): 30 % lost in the first second (both engines,
+  f = 1), 17 % with one engine out (f = ½), as printed p. 350. Figure 5.4 is
+  this closed form, not digitized; the closed form is checked against a
+  numerical integration of the decay equation.
+
+## G2f — Autorotative indices (pp. 363-364)
+
+- AI = (JΩ²/GW)(ρ/ρ₀)/D.L. = 39.0 ft³/lb for the example, as printed.
+- t_equiv: the printed 0.8 s needs the example's hover OGE power and
+  (C_T/σ)_max, which come from Chapters 1 and 4; not anchored here. Checked
+  against t_KE: t_equiv = t_KE [1 − (C_W/σ)/(0.8 (C_T/σ)_max)] at P_0 = P_OGE.
+- Figure 5.13 (pilot opinion) is not implemented.

@@ -5,6 +5,10 @@
         TurnEnergyPowerComp, ThrustCapabilityComp (Figure 5.2)
         SteadyTurnPowerGroup: EffectiveWeightComp
         (+ ForwardFlightPowerGroup of Chapter 4)
+    G2a RotorSpeedDecayGroup, rotor speed decay                     p. 348-350
+        DriveInertiaComp, KineticEnergyTimeComp, RotorSpeedDecayComp
+    G2f AutorotativeIndicesGroup, autorotative indices              p. 363-364
+        EquivalentHoverTimeComp, AutorotativeIndexComp
 """
 
 from prouty.special_performance.load_factor_comp import LoadFactorComp
@@ -15,7 +19,17 @@ from prouty.special_performance.thrust_capability_comp import FIG_5_2, ThrustCap
 from prouty.special_performance.turns_pullups_group import TurnsPullupsGroup
 from prouty.special_performance.effective_weight_comp import EffectiveWeightComp
 from prouty.special_performance.steady_turn_power_group import SteadyTurnPowerGroup
+from prouty.special_performance.drive_inertia_comp import DriveInertiaComp
+from prouty.special_performance.kinetic_energy_time_comp import KineticEnergyTimeComp
+from prouty.special_performance.rotor_speed_decay_comp import RotorSpeedDecayComp
+from prouty.special_performance.rotor_speed_decay_group import RotorSpeedDecayGroup
+from prouty.special_performance.equivalent_hover_time_comp import EquivalentHoverTimeComp
+from prouty.special_performance.autorotative_index_comp import AutorotativeIndexComp
+from prouty.special_performance.autorotative_indices_group import AutorotativeIndicesGroup
 
 __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'TurnEnergyPowerComp', 'FIG_5_2', 'ThrustCapabilityComp', 'TurnsPullupsGroup',
-           'EffectiveWeightComp', 'SteadyTurnPowerGroup']
+           'EffectiveWeightComp', 'SteadyTurnPowerGroup',
+           'DriveInertiaComp', 'KineticEnergyTimeComp', 'RotorSpeedDecayComp',
+           'RotorSpeedDecayGroup', 'EquivalentHoverTimeComp', 'AutorotativeIndexComp',
+           'AutorotativeIndicesGroup']
