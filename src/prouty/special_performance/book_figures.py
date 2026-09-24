@@ -34,7 +34,7 @@ EXAMPLE_ROTOR = dict(V_tip=650.0, rho=0.002377, A_b=240.0, sigma=0.084883,
                      theta_1=np.deg2rad(-10.0), a=6.0, gamma=8.05033, R=30.0, GW=20000.0,
                      i_s=0.0, a1s=0.0, l_T_R=1.23, cd_bar=0.0100, delta_3=np.deg2rad(-30.0))
 # Chapter 4 values the anchors take as inputs (see docs/validation_special_performance.md)
-EXAMPLE_28K = dict(P_hover=4209.0, P_avail=4077.0, T_max_IGE=31700.0, V_max_kt=204.0)
+EXAMPLE_28K = dict(P_hover=4209.0, P_avail=4077.0, T_max_IGE=31574.0, V_max_kt=214.4)   # TakeoffCapabilityGroup
 # Chapter 4 level flight power inputs of the example (design ratings, accessories)
 EXAMPLE_POWER = dict(V_son=1116.0, P_design_nose=2000.0, P_design_main=4000.0,
                      P_design_tail=750.0, load_elec=2200.0, flow_hyd=1.3, p_hyd=3000.0)

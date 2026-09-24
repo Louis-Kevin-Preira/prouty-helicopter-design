@@ -73,8 +73,8 @@ KT = 1.6878
 # Example at 28,000 lb, sea level (Figure 5.16), from the Chapter 4 hover chain:
 P_HOVER_OGE = 4209.0      # hp, HoverPerformanceGroup P_req (OGE)
 P_AVAIL = 4077.0          # hp, installed takeoff power (C4-27)
-T_MAX_IGE = 31700.0       # lb, IGE capability at Z/D = 0.25 (margin +235 hp at 31,000 lb)
-V_MAX = 204.0             # kt, zero of the linear law through acc_0 and G3 at 60 kt
+T_MAX_IGE = 31574.0       # lb, TakeoffCapabilityGroup, IGE at Z/D = 0.25
+V_MAX = 214.4             # kt, TakeoffCapabilityGroup, line through acc_0 and G3 at 60 kt
 
 
 @pytest.fixture(scope='module')

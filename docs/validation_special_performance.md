@@ -138,6 +138,23 @@ about 3,900 hp at 160 kt, which is the 20,000 lb curve of Figure 4.38.
 
 **Decision.** Relation kept; example value only.
 
+## C5-9 — Hover power in the energy times (G2e/G2f, pp. 361-363)
+
+**Printed.** t_equiv = 0.8 s (p. 363) and flare Δt = 1.25 s (p. 362) for the
+example, both J Ω² (1 − (C_W/σ)/k (C_T/σ)_max)/(1,100 hp_OGE), k = 0.8 and 1.
+
+**Check.** With the Chapter 4 hover chain (engine power 2,307 hp OGE at
+20,000 lb, main rotor power 2,026 hp) and the main rotor maximum 0.167
+(Figure 4.28): engine power gives 0.82 s and 1.09 s, main rotor power 0.94 s
+and 1.24 s. The first printed time follows the engine power, the second the
+main rotor power: no single hp_OGE gives both.
+
+**Decision.** hp_OGE = engine power required in hover (HoverEnergyGroup): after
+a power failure the rotor energy also drives the tail rotor and the drive
+losses. t_equiv within 3 % of the print, Δt 13 % below.
+
+**Tests.** `tests/special_performance/test_a2_chapter_links.py::test_hover_energy_times_c5_9`.
+
 ---
 
 ## G1 — Turns and pullups (pp. 340-346)
@@ -215,9 +232,11 @@ about 3,900 hp at 160 kt, which is the 20,000 lb curve of Figure 4.38.
   top; the energy method with f = 20 ft², C_d = 0.01, e = 0.8 gives 84.3 kt,
   hence V_CR = 87 / 105 kt (+9 % / +4 %) since dV_CR/dV_min ≈ 2.8.
 - Multiengine: V_CR = V_sink/2 (FAA) or V_sink (military), h_CR = max(50 ft, h_lo)
-  smoothed over ±1 ft. The book gives no h_hi for one engine out; Figure 5.9
-  bottom is used (assumption). V_sink needs the Chapter 4 power curve:
-  `MultiEngineCriticalSpeedComp.RD` is ready for a BalanceComp.
+  (quadratic fillet, ±1 ft). The book gives no h_hi for one engine out; Figure
+  5.9 bottom is used (assumption, left as is). MultiEngineSinkGroup finds V_sink
+  on the G5 low-speed power join: example twin at sea level with 2,000 hp left
+  and 6 ft/s of sink, V_sink = 8 kt (12 kt with 1,900 hp), consistent with
+  Figure 5.10 showing no single-engine envelope at sea level.
 - High-speed portion of Figure 5.7: no method in the book (p. 358), not modeled.
 
 ## G2e — Minimum touchdown speed (pp. 358-363)
@@ -280,18 +299,17 @@ about 3,900 hp at 160 kt, which is the 20,000 lb curve of Figure 4.38.
   and slope. The 0-40 kt segment is an interpolation, not flight mechanics.
   28,000 lb: 4,209 hp at 0, 3,263 at 20 kt, 2,813 at 26 kt, 2,028 at 40 kt.
 - Example inputs (28,000 lb, sea level): P_hover = 4,209 hp (HoverPerformanceGroup,
-  OGE), P_avail = 4,077 hp (installed takeoff, C4-27), T_max_IGE ≈ 31,700 lb
-  (IGE margin at Z/D = 0.25: +548 hp at 30,000 lb, +235 hp at 31,000 lb; the
-  tail rotor trim fails above about 32,000 lb), x_ddot_HIGE = 17.1 ft/s²,
-  V_max = 204 kt (zero of the line through x_ddot_HIGE and G3 at 60 kt,
-  12.1 ft/s²).
+  OGE), P_avail = 4,077 hp (installed takeoff, C4-27). TakeoffCapabilityGroup
+  gives T_max_IGE = 31,574 lb (weight at which the IGE power at Z/D = 0.25
+  equals the rating), x_ddot_HIGE = 16.8 ft/s², and V_max = 214 kt (zero of the
+  line through x_ddot_HIGE and G3 at 60 kt, 12.1 ft/s²).
 - Optimum rotation speed by Newton on V_rot (central-difference stencil):
 
 | obstacle | V_rot chain | V_rot book | distance chain | distance book |
 |---|---|---|---|---|
-| 50 ft | 20.8 kt | ~26 kt | 141 ft | ~325 ft |
-| 250 ft | 28.6 kt | ~30 kt | 499 ft | ~1,150 ft |
-| 500 ft | 31.1 kt | ~38 kt | 916 ft | ~1,850 ft |
+| 50 ft | 20.8 kt | ~26 kt | 142 ft | ~325 ft |
+| 250 ft | 28.6 kt | ~30 kt | 500 ft | ~1,150 ft |
+| 500 ft | 31.1 kt | ~38 kt | 917 ft | ~1,850 ft |
 
   The optimum speeds follow the book; the distances are 40-60 % of the print.
   Back-solving the 500 ft point gives a level power near 3,060 hp at 38 kt in

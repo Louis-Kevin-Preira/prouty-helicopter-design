@@ -36,6 +36,8 @@
         TurnDecelerationGroup (TurnDecelerationComp), AutorotationLimitComp,
         PoweredTurnGroup (HoverPowerScalingComp), ReturnToTargetGroup
         (ReturnToTargetComp)
+    Links to Chapter 4: HoverEnergyGroup (G2e/G2f), MultiEngineSinkGroup (G2d),
+        TakeoffCapabilityGroup (G5, LinearAccelerationComp)
     G7  TowingGroup, towing                                         p. 371-372
         TowlineTensionComp
 """
@@ -108,6 +110,10 @@ from prouty.special_performance.powered_turn_group import PoweredTurnGroup
 from prouty.special_performance.return_to_target_comp import ReturnToTargetComp
 from prouty.special_performance.return_to_target_group import ReturnToTargetGroup
 from prouty.special_performance.return_to_target_chain_group import ReturnToTargetChainGroup
+from prouty.special_performance.hover_energy_group import HoverEnergyGroup
+from prouty.special_performance.multi_engine_sink_group import MultiEngineSinkGroup
+from prouty.special_performance.linear_acceleration_comp import LinearAccelerationComp
+from prouty.special_performance.takeoff_capability_group import TakeoffCapabilityGroup
 
 __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'TurnEnergyPowerComp', 'FIG_5_2', 'ThrustCapabilityComp', 'TurnsPullupsGroup',
@@ -131,4 +137,6 @@ __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'OptimumTakeoffGroup',
            'TurnDecelerationComp', 'TurnDecelerationGroup', 'AutorotationLimitComp',
            'HoverPowerScalingComp', 'PoweredTurnGroup', 'ReturnToTargetComp',
-           'ReturnToTargetGroup', 'ReturnToTargetChainGroup']
+           'ReturnToTargetGroup', 'ReturnToTargetChainGroup',
+           'HoverEnergyGroup', 'MultiEngineSinkGroup', 'LinearAccelerationComp',
+           'TakeoffCapabilityGroup']
