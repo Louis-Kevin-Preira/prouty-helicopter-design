@@ -561,3 +561,15 @@ for the charts of p. 229, which give twist, airfoil, M_1,90, c/R and tip loss
 but not solidity or Lock number; and the root cutout everywhere. Each time,
 the fix was to establish that the result did not depend on the guess — or, for
 the root cutout, to record that it does.
+
+
+## Induced velocity option of the trim (added for Chapter 5 G5, Sept 2026)
+
+`TrimConditionsGroup(induced='exact')` uses the exact momentum induced
+velocity of p. 123 instead of C_T/2mu (default, unchanged, every published
+check). With it the fuselage angle bound of level flight is widened from
+0.45 to 0.80 rad, because at low speed the fuselage sits in the downwash
+(alpha_F = -30 deg at 30 kt, -40 deg at 25 kt). The level trim then converges
+down to 25-30 kt (20,000 lb) and 30 kt (28,000 lb), not below: the downwash
+angle v1/V of p. 192 is singular in hover, so this remains a forward flight
+model. At mu = 0.3 the two forms agree within 1 %.

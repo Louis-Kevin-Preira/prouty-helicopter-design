@@ -431,3 +431,25 @@ def test_steep_climb_trims_past_the_old_fuselage_bound():
     p.run_model()
     assert np.degrees(p.get_val('alpha_F')[0]) < -25.8
     assert 2000.0 < p.get_val('hp_M')[0] < 4000.0
+
+
+# ------------------------------------------------ induced velocity option
+def test_exact_induced_velocity_extends_level_trim_to_low_speed():
+    """induced='exact' (Chapter 5 G5): level trim converges at 30 kt, where the
+    default high-speed form does not; at mu = 0.3 the two forms agree within 1 %."""
+    def run(induced, mu):
+        p = om.Problem()
+        g = p.model.add_subsystem('g', TrimConditionsGroup(mode='level', induced=induced),
+                                  promotes=['*'])
+        p.setup()
+        g.nonlinear_solver.options['maxiter'] = 120
+        p.final_setup()
+        for name, value in {**REF, 'mu': mu}.items():
+            p.set_val(name, value)
+        p.run_model()
+        return p
+    low = run('exact', 30 * 1.6878 / 650.0)
+    assert residual(low) < 1e-10
+    assert np.degrees(low.get_val('alpha_F')[0]) < -25.0        # fuselage deep in the downwash
+    hs, ex = run('high_speed', 0.3), run('exact', 0.3)
+    assert ex.get_val('hp_M')[0] == pytest.approx(hs.get_val('hp_M')[0], rel=0.01)

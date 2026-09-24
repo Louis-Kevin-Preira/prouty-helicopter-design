@@ -111,6 +111,13 @@ class TrimConditionsGroup(om.Group):
                                   'residual.')
         self.options.declare('grid', types=tuple, default=(12, 15),
                              desc='(num_azimuth, num_radial) for G2')
+        self.options.declare('induced', values=('high_speed', 'exact'),
+                             default='high_speed',
+                             desc="InducedVelocityComp form. 'high_speed' "
+                                  '(C_T/2mu, p. 167) is singular at mu = 0 and '
+                                  "keeps every published result; 'exact' "
+                                  '(p. 123) is regular down to hover and is '
+                                  'what low-speed trims (Chapter 5 takeoff) need.')
         self.options.declare('tail_rotor', types=bool, default=True,
                              desc='solve the tail rotor for H_T and hp_T, '
                                   'instead of taking H_T as an input')
@@ -148,7 +155,8 @@ class TrimConditionsGroup(om.Group):
         # ft/min at 80 kt trims past -25.8 deg, which the old +-0.45 rad bound
         # cut off. The bound is widened for climb and autorotation only, so
         # level flight keeps the tighter bracket that tames the tail rotor.
-        alpha_F_bound = 0.45 if mode == 'level' else 0.80
+        alpha_F_bound = (0.45 if mode == 'level' and self.options['induced'] == 'high_speed'
+                         else 0.80)
         balance.add_balance('alpha_F', val=-0.1 * ones, units='rad',
                             lhs_name='res_alpha_F', rhs_val=np.zeros(nn),
                             eq_units='rad', lower=-alpha_F_bound, upper=alpha_F_bound)
@@ -193,7 +201,9 @@ class TrimConditionsGroup(om.Group):
 
         # ---------------------------------------------------------- rotor
         self.add_subsystem('induced_velocity',
-                           InducedVelocityComp(num_nodes=nn), promotes=['*'])
+                           InducedVelocityComp(num_nodes=nn,
+                                               form=self.options['induced']),
+                           promotes=['*'])
         if self.options['rotor'] == 'closed_form':
             self.add_subsystem(
                 'rotor', ClosedFormRotorGroup(num_nodes=nn, mode='collective',
