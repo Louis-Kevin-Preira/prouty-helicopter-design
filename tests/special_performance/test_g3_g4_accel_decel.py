@@ -63,6 +63,15 @@ def test_anchor_fig514_forward_acceleration(accel):
     assert_near_equal(accel.get_val('acc_max')[0], 28.4, 0.08)      # 20 kt
 
 
+def test_available_power_is_a_free_input():
+    """P_MR_avail: default 3,600 hp, promoted to the group, drives the capability."""
+    from prouty.special_performance.available_torque_comp import DEFAULT_P_MR_AVAIL
+    base = _run(MaxAccelerationGroup(), V=(100.0, 'kn'), cd_bar=0.01, **ROTOR)
+    assert base.get_val('P_MR_avail', units='hp')[0] == DEFAULT_P_MR_AVAIL == 3600.0
+    low = _run(MaxAccelerationGroup(), V=(100.0, 'kn'), cd_bar=0.01, P_MR_avail=3000.0, **ROTOR)
+    assert low.get_val('acc_max')[0] < base.get_val('acc_max')[0]
+
+
 def test_acceleration_is_hover_limited_at_low_speed(accel):
     assert accel.get_val('acc_max')[0] <= accel.get_val('acc_hover')[0]
 

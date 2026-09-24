@@ -7,7 +7,9 @@ Chapter 5, "Maximum Acceleration" p. 365 ("C_Q/sigma max. avail. to main rotor")
     C_Q/sigma = 550 hp_MR / (rho A_b (Omega R)^3)
 
 hp_MR: power available at the main rotor (engine rating less tail rotor and
-drive losses, Chapter 4).
+drive losses, Chapter 4). Free input; its default, DEFAULT_P_MR_AVAIL =
+3,600 hp, is the book-validation value for the example helicopter (4,000 hp
+takeoff power less tail rotor and drive losses).
 
     P_MR_avail, rho, A_b, V_tip --> CQ_sigma_avail
 """
@@ -16,13 +18,14 @@ import numpy as np
 import openmdao.api as om
 
 HP_TO_FT_LBF_PER_S = 550.0
+DEFAULT_P_MR_AVAIL = 3600.0     # hp, example helicopter (book validation)
 
 
 class AvailableTorqueComp(om.ExplicitComponent):
     """Main rotor torque coefficient at the available power, p. 365."""
 
     def setup(self):
-        self.add_input('P_MR_avail', val=3600.0, units='hp')
+        self.add_input('P_MR_avail', val=DEFAULT_P_MR_AVAIL, units='hp')
         self.add_input('rho', val=0.002377, units='slug/ft**3')
         self.add_input('A_b', val=240.0, units='ft**2')
         self.add_input('V_tip', val=650.0, units='ft/s')
