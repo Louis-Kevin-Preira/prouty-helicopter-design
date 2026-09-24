@@ -116,6 +116,16 @@ of Chapter 3, not the 3,170 hp of Figure 4.38.
 - Expected: no change at 20,000 lb (C_T/sigma_eff = 0.068); roughly +250 to
   +300 hp at the rotor at 24,000 lb.
 
+## C5-7 — Figure reference for the zoom power (G2c, p. 352)
+
+**Printed.** "The power required was taken from Figure 4.24."
+
+**Check.** Figure 4.24 is the hub-pylon interference drag (p. 295). The power
+required curve of the example is Figure 4.38; back-solving Figure 5.6 gives
+about 3,900 hp at 160 kt, which is the 20,000 lb curve of Figure 4.38.
+
+**Decision.** Reference only; P_0 and P_1 are inputs fed by the Chapter 4 chain.
+
 ---
 
 ## G1 — Turns and pullups (pp. 340-346)
@@ -144,6 +154,19 @@ of Chapter 3, not the 3,170 hp of Figure 4.38.
   (C_T/σ)_max, which come from Chapters 1 and 4; not anchored here. Checked
   against t_KE: t_equiv = t_KE [1 − (C_W/σ)/(0.8 (C_T/σ)_max)] at P_0 = P_OGE.
 - Figure 5.13 (pilot opinion) is not implemented.
+
+## G2c — Zoom and glide distance (pp. 351-352)
+
+- γ_c = arccos[(C_W/σ)/(C_T/σ)_max] with the conservative 0.12 (p. 352).
+- Figure 5.6 (failure at 160 kt) digitized on the scan: Δh and Δd at
+  V_1 = 70-140 kt. Their ratio Δd/Δh = V_1/(R/D) matches Figure 5.5, also
+  digitized, within 5 % at every speed: the glide relation is anchored.
+- Δh: rotor kinetic energy excluded as p. 352 advises. Back-solving Figure 5.6
+  gives hp_0 + hp_1 from 5,000 hp (V_1 = 70 kt) to 7,500 hp (150 kt), i.e.
+  about 3,900 hp at 160 kt (C5-7). The printed Δh is not reproduced with the
+  Chapter 4 chain yet: P_0, P_1 (Chapter 4) and R/D (G2b) are inputs, to be
+  connected when G2b is done. Best autorotation speed for glide (about 87 kt
+  on Figure 5.6) will be checked then.
 
 ## G7 — Towing (pp. 371-372)
 

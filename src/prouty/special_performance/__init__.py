@@ -9,6 +9,8 @@
         DriveInertiaComp, KineticEnergyTimeComp, RotorSpeedDecayComp
     G2f AutorotativeIndicesGroup, autorotative indices              p. 363-364
         EquivalentHoverTimeComp, AutorotativeIndexComp
+    G2c ZoomGlideGroup, zoom maneuver and glide distance            p. 351-352
+        ZoomClimbAngleComp, ZoomAltitudeGainComp, GlideDistanceComp
     G7  TowingGroup, towing                                         p. 371-372
         TowlineTensionComp
 """
@@ -30,10 +32,15 @@ from prouty.special_performance.autorotative_index_comp import AutorotativeIndex
 from prouty.special_performance.autorotative_indices_group import AutorotativeIndicesGroup
 from prouty.special_performance.towline_tension_comp import TowlineTensionComp
 from prouty.special_performance.towing_group import TowingGroup
+from prouty.special_performance.zoom_climb_angle_comp import ZoomClimbAngleComp
+from prouty.special_performance.zoom_altitude_gain_comp import ZoomAltitudeGainComp
+from prouty.special_performance.glide_distance_comp import GlideDistanceComp
+from prouty.special_performance.zoom_glide_group import ZoomGlideGroup
 
 __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'TurnEnergyPowerComp', 'FIG_5_2', 'ThrustCapabilityComp', 'TurnsPullupsGroup',
            'EffectiveWeightComp', 'SteadyTurnPowerGroup',
            'DriveInertiaComp', 'KineticEnergyTimeComp', 'RotorSpeedDecayComp',
            'RotorSpeedDecayGroup', 'EquivalentHoverTimeComp', 'AutorotativeIndexComp',
-           'AutorotativeIndicesGroup', 'TowlineTensionComp', 'TowingGroup']
+           'AutorotativeIndicesGroup', 'TowlineTensionComp', 'TowingGroup',
+           'ZoomClimbAngleComp', 'ZoomAltitudeGainComp', 'GlideDistanceComp', 'ZoomGlideGroup']
