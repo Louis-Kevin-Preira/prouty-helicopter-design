@@ -169,6 +169,18 @@ about 3,900 hp at 160 kt, which is the 20,000 lb curve of Figure 4.38.
   to compare with Chapters 1 and 4 when G2 is linked.
 - Figure 5.13 (pilot opinion) is not implemented.
 
+## G2b — Steady descent in autorotation (pp. 350-351)
+
+- R/D(V) from the Chapter 3 trim in `mode='autorotation'` (closed-form rotor,
+  losses of p. 197), L/D = V/(R/D). Trim residuals below 1e-10.
+- Figure 5.5 (digitized): within 10 % from 70 to 140 kt; the chain sits 1-4 %
+  low up to 100 kt and 7-10 % low at 120-140 kt.
+- Best speeds by Newton on V around the trim, central-difference stencil
+  (±2 kt): minimum rate of descent 81 kt, 1,573 ft/min (bottom of Figure 5.5
+  at about 80-85 kt); minimum descent angle 125 kt, L/D = 6.59 against the
+  printed 6.3 (+5 %), at the tangent speed marked on Figure 5.5.
+- dV/dGW through the nested Newton checked against finite differences (2 %).
+
 ## G2c — Zoom and glide distance (pp. 351-352)
 
 - γ_c = arccos[(C_W/σ)/(C_T/σ)_max] with the conservative 0.12 (p. 352).
@@ -178,9 +190,14 @@ about 3,900 hp at 160 kt, which is the 20,000 lb curve of Figure 4.38.
 - Δh: rotor kinetic energy excluded as p. 352 advises. Back-solving Figure 5.6
   gives hp_0 + hp_1 from 5,000 hp (V_1 = 70 kt) to 7,500 hp (150 kt), i.e.
   about 3,900 hp at 160 kt (C5-7). The printed Δh is not reproduced with the
-  Chapter 4 chain yet: P_0, P_1 (Chapter 4) and R/D (G2b) are inputs, to be
-  connected when G2b is done. Best autorotation speed for glide (about 87 kt
-  on Figure 5.6) will be checked then.
+  Chapter 4 chain: P_0, P_1 (Chapter 4) and R/D (G2b) are inputs of
+  ZoomGlideGroup.
+- ZoomGlideChainGroup connects them: G2b and Chapter 4 G7 run on the same
+  speeds [V_1, V_0] so per-node design inputs share one shape. Failure at
+  160 kt: the extra glide distance peaks at 87-90 kt, as on Figure 5.6.
+  Δh is 40-60 % above the print because the chain needs 1,876 hp at 160 kt
+  where Figure 5.6 implies about 3,900 hp (C4-29, C5-7): the gap is the
+  Chapter 4 power curve, not the zoom relation.
 
 ## G2d — Height-velocity diagram (pp. 352-358)
 

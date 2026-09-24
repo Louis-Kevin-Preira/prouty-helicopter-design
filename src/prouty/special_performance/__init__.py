@@ -9,8 +9,12 @@
         DriveInertiaComp, KineticEnergyTimeComp, RotorSpeedDecayComp
     G2f AutorotativeIndicesGroup, autorotative indices              p. 363-364
         EquivalentHoverTimeComp, AutorotativeIndexComp
+    G2b AutorotationDescentGroup, steady autorotative descent       p. 350-351
+        BestAutorotationSpeedGroup (DescentSpeedStencilComp)
     G2c ZoomGlideGroup, zoom maneuver and glide distance            p. 351-352
         ZoomClimbAngleComp, ZoomAltitudeGainComp, GlideDistanceComp
+        ZoomGlideChainGroup: G2c fed by G2b and Chapter 4 (SpeedNodesComp,
+        ChainSplitComp)
     G2d HeightVelocityGroup, height-velocity diagram                p. 352-358
         LowHoverHeightComp, MinPowerSpeedComp, CriticalSpeedComp,
         MultiEngineCriticalSpeedComp, HighHoverHeightComp, HVBoundaryComp
@@ -58,6 +62,12 @@ from prouty.special_performance.flare_conditions_comp import FlareConditionsComp
 from prouty.special_performance.flare_autorotation_group import FlareAutorotationGroup
 from prouty.special_performance.touchdown_speed_comp import TouchdownSpeedComp
 from prouty.special_performance.min_touchdown_speed_group import MinTouchdownSpeedGroup
+from prouty.special_performance.autorotation_descent_group import AutorotationDescentGroup
+from prouty.special_performance.descent_speed_stencil_comp import DescentSpeedStencilComp
+from prouty.special_performance.best_autorotation_speed_group import BestAutorotationSpeedGroup
+from prouty.special_performance.speed_nodes_comp import SpeedNodesComp
+from prouty.special_performance.chain_split_comp import ChainSplitComp
+from prouty.special_performance.zoom_glide_chain_group import ZoomGlideChainGroup
 
 __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'TurnEnergyPowerComp', 'FIG_5_2', 'ThrustCapabilityComp', 'TurnsPullupsGroup',
@@ -70,4 +80,6 @@ __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'MultiEngineCriticalSpeedComp', 'HighHoverHeightComp', 'HVBoundaryComp',
            'HeightVelocityGroup',
            'FlarePitchRateComp', 'FlareTimeComp', 'FlareAngleComp', 'FlareConditionsComp',
-           'FlareAutorotationGroup', 'TouchdownSpeedComp', 'MinTouchdownSpeedGroup']
+           'FlareAutorotationGroup', 'TouchdownSpeedComp', 'MinTouchdownSpeedGroup',
+           'AutorotationDescentGroup', 'DescentSpeedStencilComp', 'BestAutorotationSpeedGroup',
+           'SpeedNodesComp', 'ChainSplitComp', 'ZoomGlideChainGroup']
