@@ -22,3 +22,4 @@ coloring_files/
 # examples/ scripts write their figures beside themselves; regenerate,
 # don't commit
 examples/**/*.png
+*_out/
