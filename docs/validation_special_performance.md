@@ -129,6 +129,15 @@ about 3,900 hp at 160 kt, which is the 20,000 lb curve of Figure 4.38.
 
 **Decision.** Reference only; P_0 and P_1 are inputs fed by the Chapter 4 chain.
 
+## C5-8 — Flare angle of the example (G2e, p. 362)
+
+**Printed.** θ̇_max = 88 deg/s, Δt = 1.25 s, α_TPP,max = 100 deg (use 45).
+
+**Check.** θ̇_max Δt = 88 × 1.25 = 110 deg. No consequence: both exceed the
+45 deg limit.
+
+**Decision.** Relation kept; example value only.
+
 ---
 
 ## G1 — Turns and pullups (pp. 340-346)
@@ -154,8 +163,10 @@ about 3,900 hp at 160 kt, which is the 20,000 lb curve of Figure 4.38.
 
 - AI = (JΩ²/GW)(ρ/ρ₀)/D.L. = 39.0 ft³/lb for the example, as printed.
 - t_equiv: the printed 0.8 s needs the example's hover OGE power and
-  (C_T/σ)_max, which come from Chapters 1 and 4; not anchored here. Checked
-  against t_KE: t_equiv = t_KE [1 − (C_W/σ)/(0.8 (C_T/σ)_max)] at P_0 = P_OGE.
+  (C_T/σ)_max, which come from Chapters 1 and 4. Checked against t_KE, and
+  jointly with the flare time of p. 362 (1.25 s): both printed times are met by
+  (C_T/σ)_max = 0.1406 and hp_OGE = 1,643 hp with J = 11,735 slug ft² — values
+  to compare with Chapters 1 and 4 when G2 is linked.
 - Figure 5.13 (pilot opinion) is not implemented.
 
 ## G2c — Zoom and glide distance (pp. 351-352)
@@ -191,6 +202,21 @@ about 3,900 hp at 160 kt, which is the 20,000 lb curve of Figure 4.38.
   bottom is used (assumption). V_sink needs the Chapter 4 power curve:
   `MultiEngineCriticalSpeedComp.RD` is ready for a BalanceComp.
 - High-speed portion of Figure 5.7: no method in the book (p. 358), not modeled.
+
+## G2e — Minimum touchdown speed (pp. 358-363)
+
+- θ̇_max = γΩΔB₁/16 = 87.8 deg/s for ΔB₁ = 8° (printed 88). Δt = 1.25 s with
+  the values above. α_TPP = min(θ̇Δt, 45°), min smoothed over ±1°.
+- μ_auto from the Chapter 3 closed-form rotor (project decision): C_T/σ =
+  (C_W/σ)/cos α_TPP, C_Q/σ = 0 solved by Newton on μ, λ' = μα_TPP − v₁/ΩR
+  (InflowComp convention), exact induced velocity (regular at low μ).
+- Figure 5.12 digitized on the user's clean crop, validation only. C_W/σ = 0.05:
+  within 10 % from 10° to 45°. C_W/σ = 0.10: within 10 % from 30°; 16-25 % low
+  at 15-20°, where C_T/σ ≈ 0.105 puts the charts' −5° twist rotor in stall
+  (same mechanism as C5-6). The flare itself is used at 45°, where the gap is 5 %.
+- Example: V_TD = 18.9 kt against 21 kt printed (μ_auto = 0.080; Figure 5.12
+  gives 0.082, i.e. 19.7 kt). Total derivatives through the autorotation
+  balance checked by complex step.
 
 ## G7 — Towing (pp. 371-372)
 

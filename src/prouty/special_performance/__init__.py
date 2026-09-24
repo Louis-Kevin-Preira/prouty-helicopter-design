@@ -14,6 +14,10 @@
     G2d HeightVelocityGroup, height-velocity diagram                p. 352-358
         LowHoverHeightComp, MinPowerSpeedComp, CriticalSpeedComp,
         MultiEngineCriticalSpeedComp, HighHoverHeightComp, HVBoundaryComp
+    G2e MinTouchdownSpeedGroup, minimum touchdown speed             p. 358-363
+        FlarePitchRateComp, FlareTimeComp, FlareAngleComp,
+        FlareAutorotationGroup (FlareConditionsComp + Chapter 3 rotor),
+        TouchdownSpeedComp
     G7  TowingGroup, towing                                         p. 371-372
         TowlineTensionComp
 """
@@ -47,6 +51,13 @@ from prouty.special_performance.multi_engine_critical_speed_comp import \
 from prouty.special_performance.high_hover_height_comp import HighHoverHeightComp
 from prouty.special_performance.hv_boundary_comp import HVBoundaryComp
 from prouty.special_performance.height_velocity_group import HeightVelocityGroup
+from prouty.special_performance.flare_pitch_rate_comp import FlarePitchRateComp
+from prouty.special_performance.flare_time_comp import FlareTimeComp
+from prouty.special_performance.flare_angle_comp import FlareAngleComp
+from prouty.special_performance.flare_conditions_comp import FlareConditionsComp
+from prouty.special_performance.flare_autorotation_group import FlareAutorotationGroup
+from prouty.special_performance.touchdown_speed_comp import TouchdownSpeedComp
+from prouty.special_performance.min_touchdown_speed_group import MinTouchdownSpeedGroup
 
 __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'TurnEnergyPowerComp', 'FIG_5_2', 'ThrustCapabilityComp', 'TurnsPullupsGroup',
@@ -57,4 +68,6 @@ __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'ZoomClimbAngleComp', 'ZoomAltitudeGainComp', 'GlideDistanceComp', 'ZoomGlideGroup',
            'LowHoverHeightComp', 'MinPowerSpeedComp', 'CriticalSpeedComp',
            'MultiEngineCriticalSpeedComp', 'HighHoverHeightComp', 'HVBoundaryComp',
-           'HeightVelocityGroup']
+           'HeightVelocityGroup',
+           'FlarePitchRateComp', 'FlareTimeComp', 'FlareAngleComp', 'FlareConditionsComp',
+           'FlareAutorotationGroup', 'TouchdownSpeedComp', 'MinTouchdownSpeedGroup']
