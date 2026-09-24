@@ -267,17 +267,37 @@ about 3,900 hp at 160 kt, which is the 20,000 lb curve of Figure 4.38.
 - The figure itself sits below Figure 5.14 under 37 kt (25 against 28 ft/s² at
   20 kt), although p. 365 states they are equal there; not modeled.
 
-## G5 — Takeoff at high gross weight (pp. 366-368) — formula layer only
+## G5 — Takeoff at high gross weight (pp. 366-368)
 
 - x_acc and t_acc of p. 367 checked against a numerical integration of the
   linear acceleration law; x_CL = h/tan γ with the momentum R/C of p. 368.
-- Open: the power source. At 28,000 lb (Figure 5.16) the Chapter 4 level
-  flight trim does not converge below about 40 kt (high-speed induced
-  velocity of the Chapter 3 trim), and the closed-form force balance of G3
-  with the exact induced velocity still gives 15 ft/s² at 20 kt out of ground
-  effect at a weight that cannot hover OGE. P_level(V_rot), acc_0 and V_max
-  are inputs until this is decided; the optimum rotation speed and Figure 5.16
-  are not reproduced yet.
+- Low-speed power (option (b)): the Chapter 3 trim, even with
+  `induced='exact'`, stops at about 30 kt (fuselage downwash v1/V singular in
+  hover) and its power there is well below the Chapter 4 hover power (1,598 hp
+  at 25 kt against 2,307 hp in hover at 20,000 lb). LowSpeedPowerGroup joins
+  the Chapter 4 hover power (V = 0, zero slope) to the forward flight chain
+  (exact induced velocity) at V_b = 40 kt with a cubic Hermite matching value
+  and slope. The 0-40 kt segment is an interpolation, not flight mechanics.
+  28,000 lb: 4,209 hp at 0, 3,263 at 20 kt, 2,813 at 26 kt, 2,028 at 40 kt.
+- Example inputs (28,000 lb, sea level): P_hover = 4,209 hp (HoverPerformanceGroup,
+  OGE), P_avail = 4,077 hp (installed takeoff, C4-27), T_max_IGE ≈ 31,700 lb
+  (IGE margin at Z/D = 0.25: +548 hp at 30,000 lb, +235 hp at 31,000 lb; the
+  tail rotor trim fails above about 32,000 lb), x_ddot_HIGE = 17.1 ft/s²,
+  V_max = 204 kt (zero of the line through x_ddot_HIGE and G3 at 60 kt,
+  12.1 ft/s²).
+- Optimum rotation speed by Newton on V_rot (central-difference stencil):
+
+| obstacle | V_rot chain | V_rot book | distance chain | distance book |
+|---|---|---|---|---|
+| 50 ft | 20.8 kt | ~26 kt | 141 ft | ~325 ft |
+| 250 ft | 28.6 kt | ~30 kt | 499 ft | ~1,150 ft |
+| 500 ft | 31.1 kt | ~38 kt | 916 ft | ~1,850 ft |
+
+  The optimum speeds follow the book; the distances are 40-60 % of the print.
+  Back-solving the 500 ft point gives a level power near 3,060 hp at 38 kt in
+  the book against about 2,100 hp here: the book's low-speed powers carry the
+  same ~40 % excess as Figure 4.38 (C4-29), which shrinks its climb-out excess
+  power.
 
 ## G7 — Towing (pp. 371-372)
 
