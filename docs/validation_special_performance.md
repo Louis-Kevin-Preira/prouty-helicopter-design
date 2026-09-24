@@ -299,6 +299,29 @@ about 3,900 hp at 160 kt, which is the 20,000 lb curve of Figure 4.38.
   same ~40 % excess as Figure 4.38 (C4-29), which shrinks its climb-out excess
   power.
 
+## G6 — Return-to-target maneuver (pp. 368-371)
+
+- Turn table (TurnDecelerationGroup): rotor at zero torque and 100 % rpm, at
+  the thrust ceiling of Figure 5.2 (transient band, project decision; the book
+  uses the chart upper stall limit, which the closed-form rotor lacks, C5-6).
+  n ≈ 2.0 from 60 to 125 kt; V_dot from −8 ft/s² at 125 kt to −60 ft/s² at 26 kt.
+- Autorotative limit n_turn = 1 at 28.4 kt. Below it, powered steady turn
+  (p. 371) with n_p = maximum weight/actual weight at the takeoff rating:
+  n_p = 1.89 from the G5 low-speed power join at n_p·G.W. The hover anchor of
+  the join is scaled as P_hover(G.W.) n_p^(3/2): the Chapter 4 hover chain
+  cannot trim its tail rotor at 38,000 lb. Fallback powered_turn='fixed'.
+- Integration: Heun, N = 40 steps per phase; N = 40 is within 0.1 % of
+  N = 160 on the total time. The switch to the powered turn is a tanh blend
+  (±1.5 ft/s) so the integration stays differentiable.
+- End of turn: residual on the heading, psi − (π + atan(y/x)). The first
+  form, the cross product x sin psi − y cos psi, also vanishes when the
+  heading points away from the target; Newton converged there for some N.
+- Figure 5.17 (115 kt, 20,000 lb): minimum speed 26.6 kt against 27 kt; turn
+  9.8 s against about 12.5 s; straight return 6.7 s against about 10.5 s (G3
+  acceleration above Fig. 5.14); total 16.5 s against 23 s; loop 560 × 770 ft
+  against about 1,010 × 965 ft. The transient ceiling decelerates harder than
+  the book's zero-torque upper stall limit, hence the tighter loop.
+
 ## G7 — Towing (pp. 371-372)
 
 - Tension/G.W. = −sin γ + √(sin²γ + (T_max/G.W.)² − 1), from the force balance

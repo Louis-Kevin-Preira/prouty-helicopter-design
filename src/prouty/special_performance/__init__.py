@@ -32,6 +32,10 @@
         TakeoffAccelerationDistanceComp, ClimboutDistanceComp
         LowSpeedPowerGroup (JoinStencilComp, JoinSlopeComp, LowSpeedPowerComp)
         OptimumTakeoffGroup (TakeoffStencilComp)
+    G6  ReturnToTargetChainGroup, return-to-target maneuver         p. 368-371
+        TurnDecelerationGroup (TurnDecelerationComp), AutorotationLimitComp,
+        PoweredTurnGroup (HoverPowerScalingComp), ReturnToTargetGroup
+        (ReturnToTargetComp)
     G7  TowingGroup, towing                                         p. 371-372
         TowlineTensionComp
 """
@@ -96,6 +100,14 @@ from prouty.special_performance.join_slope_comp import JoinSlopeComp
 from prouty.special_performance.low_speed_power_group import LowSpeedPowerGroup
 from prouty.special_performance.takeoff_stencil_comp import TakeoffStencilComp
 from prouty.special_performance.optimum_takeoff_group import OptimumTakeoffGroup
+from prouty.special_performance.turn_deceleration_comp import TurnDecelerationComp
+from prouty.special_performance.turn_deceleration_group import TurnDecelerationGroup
+from prouty.special_performance.autorotation_limit_comp import AutorotationLimitComp
+from prouty.special_performance.hover_power_scaling_comp import HoverPowerScalingComp
+from prouty.special_performance.powered_turn_group import PoweredTurnGroup
+from prouty.special_performance.return_to_target_comp import ReturnToTargetComp
+from prouty.special_performance.return_to_target_group import ReturnToTargetGroup
+from prouty.special_performance.return_to_target_chain_group import ReturnToTargetChainGroup
 
 __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'TurnEnergyPowerComp', 'FIG_5_2', 'ThrustCapabilityComp', 'TurnsPullupsGroup',
@@ -116,4 +128,7 @@ __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'RotorForceLimitGroup', 'MaxDecelerationGroup',
            'TakeoffAccelerationDistanceComp', 'ClimboutDistanceComp', 'TakeoffDistanceGroup',
            'LowSpeedPowerComp', 'JoinStencilComp', 'JoinSlopeComp', 'LowSpeedPowerGroup', 'TakeoffStencilComp',
-           'OptimumTakeoffGroup']
+           'OptimumTakeoffGroup',
+           'TurnDecelerationComp', 'TurnDecelerationGroup', 'AutorotationLimitComp',
+           'HoverPowerScalingComp', 'PoweredTurnGroup', 'ReturnToTargetComp',
+           'ReturnToTargetGroup', 'ReturnToTargetChainGroup']
