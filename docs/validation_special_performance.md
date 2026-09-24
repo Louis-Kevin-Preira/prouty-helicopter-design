@@ -235,6 +235,38 @@ about 3,900 hp at 160 kt, which is the 20,000 lb curve of Figure 4.38.
   gives 0.082, i.e. 19.7 kt). Total derivatives through the autorotation
   balance checked by complex step.
 
+## G3 — Maximum acceleration (pp. 364-365)
+
+- Hover: g √((T_max/G.W.)² − 1) = 31.1 ft/s² with T_max = 27,800 lb (Fig. 4.35),
+  31 on Figure 5.14.
+- Forward flight, physical form of the p. 365 procedure: the tip path plane is
+  tilted forward until the main rotor torque reaches C_Q/σ available
+  (P_MR_avail, default 3,600 hp: 4,000 hp takeoff less tail rotor and drive
+  losses), with T cos α_TPP = G.W.; acc = −g (f q + H + T sin α)/G.W.
+  (Chapter 3 closed-form rotor, RotorForceLimitGroup mode='accel').
+- A first, simpler form — acceleration from excess power, g·550 ΔP/(G.W. V) —
+  was tried and dropped: 35-50 % above Figure 5.14 at every speed, even with
+  the book's own power curve, because it ignores the thrust increase of the
+  tilted rotor.
+- Figure 5.14 (digitized): 20-80 kt within 15 % (chain above); +25 % at
+  100 kt, and 4.9 ft/s² left at 160 kt where the figure reaches zero. At
+  C_T/σ = 0.09-0.10 the closed-form rotor has no stall torque (C5-6).
+- Trim start matters: tilt −0.6 rad; a start near −0.3 rad finds a spurious
+  root at 10 kt. Below about 20 kt the hover limit governs (smooth min, ±0.5 ft/s²).
+
+## G4 — Maximum deceleration (pp. 365-366)
+
+- Rotor in autorotation (C_Q/σ = 0) at 120 % tip speed, T cos α = G.W.,
+  decel = g (f q + H + T sin α)/G.W. (book: T α, small angle).
+- Figure 5.15 (digitized): within 12 % from 60 to 160 kt, including the flat
+  minimum near 120-140 kt (5.7 against 5.9 ft/s²); +20 % at 40 kt.
+- The autorotation branch needs 37.6° of flare at 37 kt and 59° at 30 kt, and
+  has no solution below about 30 kt: the physical counterpart of the figure's
+  note "limited to autorotation above 37 knots". Below, the deceleration
+  capability is the acceleration capability (smooth min with acc_max of G3).
+- The figure itself sits below Figure 5.14 under 37 kt (25 against 28 ft/s² at
+  20 kt), although p. 365 states they are equal there; not modeled.
+
 ## G7 — Towing (pp. 371-372)
 
 - Tension/G.W. = −sin γ + √(sin²γ + (T_max/G.W.)² − 1), from the force balance

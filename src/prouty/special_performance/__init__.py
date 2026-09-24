@@ -22,6 +22,12 @@
         FlarePitchRateComp, FlareTimeComp, FlareAngleComp,
         FlareAutorotationGroup (FlareConditionsComp + Chapter 3 rotor),
         TouchdownSpeedComp
+    G3  MaxAccelerationGroup, maximum acceleration                   p. 364-365
+        HoverAccelerationComp, AvailableTorqueComp, SmoothMinComp,
+        RotorForceLimitGroup (WeightCoefComp, FlareConditionsComp,
+        Chapter 3 rotor, DecelerationForceComp)
+    G4  MaxDecelerationGroup, maximum deceleration                   p. 365-366
+        RotorForceLimitGroup(mode='decel'), SmoothMinComp
     G7  TowingGroup, towing                                         p. 371-372
         TowlineTensionComp
 """
@@ -68,6 +74,14 @@ from prouty.special_performance.best_autorotation_speed_group import BestAutorot
 from prouty.special_performance.speed_nodes_comp import SpeedNodesComp
 from prouty.special_performance.chain_split_comp import ChainSplitComp
 from prouty.special_performance.zoom_glide_chain_group import ZoomGlideChainGroup
+from prouty.special_performance.hover_acceleration_comp import HoverAccelerationComp
+from prouty.special_performance.available_torque_comp import AvailableTorqueComp
+from prouty.special_performance.smooth_min_comp import SmoothMinComp
+from prouty.special_performance.max_acceleration_group import MaxAccelerationGroup
+from prouty.special_performance.weight_coef_comp import WeightCoefComp
+from prouty.special_performance.deceleration_force_comp import DecelerationForceComp
+from prouty.special_performance.rotor_force_limit_group import RotorForceLimitGroup
+from prouty.special_performance.max_deceleration_group import MaxDecelerationGroup
 
 __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'TurnEnergyPowerComp', 'FIG_5_2', 'ThrustCapabilityComp', 'TurnsPullupsGroup',
@@ -82,4 +96,7 @@ __all__ = ['LoadFactorComp', 'TurnKinematicsComp', 'TurnCyclicReliefComp',
            'FlarePitchRateComp', 'FlareTimeComp', 'FlareAngleComp', 'FlareConditionsComp',
            'FlareAutorotationGroup', 'TouchdownSpeedComp', 'MinTouchdownSpeedGroup',
            'AutorotationDescentGroup', 'DescentSpeedStencilComp', 'BestAutorotationSpeedGroup',
-           'SpeedNodesComp', 'ChainSplitComp', 'ZoomGlideChainGroup']
+           'SpeedNodesComp', 'ChainSplitComp', 'ZoomGlideChainGroup',
+           'HoverAccelerationComp', 'AvailableTorqueComp', 'SmoothMinComp',
+           'MaxAccelerationGroup', 'WeightCoefComp', 'DecelerationForceComp',
+           'RotorForceLimitGroup', 'MaxDecelerationGroup']
