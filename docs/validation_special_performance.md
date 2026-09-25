@@ -97,6 +97,23 @@ the turn power is optimistic; `ThrustCapabilityComp.n_margin` flags them.
 **Tests.** `::test_turn_power_is_level_power_at_effective_weight`,
 `::test_turn_power_below_print_c5_6`.
 
+**Status: correction coded (Sept 2026).** `StallTorqueIncrementComp`
+(`prouty/performance`), `ForwardFlightPowerGroup(stall=True)` (default False).
+
+- Charts pp. 258-266 digitized plate by plate (X and C_Q/sigma, theta_0 = 0-24 deg,
+  C_T/sigma step 0.00125, user-checked overlays): `data/chart_plates.json`.
+- Increment = chart - closed form on the chart rotor, less each curve's mean over
+  C_T/sigma = 0.05-0.07 (baseline 0 at 10 deg up to 0.0082 at 24 deg, mu = 0.40):
+  `data/stall_increment.json`, 40 curves. Zero up to C_T/sigma ~ 0.07, then rising,
+  earlier and stronger at high mu and high collective.
+- Table on (mu, C_T/sigma_eff, X mu^3), rows interpolated across the curves and
+  held flat outside them; Akima 3-D; smooth clamp of the coordinates, smooth floor
+  at 0. C_T/sigma_eff = C_T/sigma + 0.003 (theta_1 + 5 deg) - (a/6) d_alpha_stall.
+- 115 kt: +34 hp at 20,000 lb (C_T/sigma_eff = 0.071); +316 hp at 24,000 lb
+  (0.088): engine power 1,301 -> 1,620 hp. Still well below the printed 3,170 hp,
+  and below the chart method read without the twist shift (C_Q/sigma ~ 0.009):
+  the p. 230 twist shift moves the example (-10 deg) 0.015 away from stall.
+
 **Status: correction designed, paused (Sept 2026).** Target is the chart method
 of Chapter 3, not the 3,170 hp of Figure 4.38.
 

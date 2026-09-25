@@ -11,7 +11,9 @@ Chapter 3 trim pp. 192-199 and Table 3.5 case 2 p. 233; power losses p. 277.
     drag_rise      DragRiseMachComp        M_dr3, M_ratio
     comp           CompressibilityTorqueComp  dCQ_sigma_comp                   Fig. 3.43
     comp_power     RotorPowerComp          hp_comp
-    main_power     P_MR = hp_M + hp_comp
+    stall          StallTorqueIncrementComp  dCQ_sigma_stall (stall=True, C5-6)  pp. 230, 258-266
+    stall_power    RotorPowerComp          hp_stall
+    main_power     P_MR = hp_M + hp_comp + hp_stall
     losses         PowerLossesGroup (G1)   P_req                                p. 277-278
 
 Compressibility is left out of the trim loop, where Chapter 3 found it puts
@@ -35,6 +37,7 @@ from prouty.forward_flight import (AdvanceRatioComp, CompressibilityTorqueComp,
                                    TrimConditionsGroup)
 from prouty.performance.gearbox_loss_comp import EXAMPLE_GEARBOXES, _check
 from prouty.performance.power_losses_group import PowerLossesGroup
+from prouty.performance.stall_torque_increment_comp import StallTorqueIncrementComp
 
 
 class ForwardFlightPowerGroup(om.Group):
@@ -44,6 +47,8 @@ class ForwardFlightPowerGroup(om.Group):
         self.options.declare('num_nodes', types=int, default=1)
         self.options.declare('compressibility', types=bool, default=True,
                              desc='add the Figure 3.43 penalty after the trim')
+        self.options.declare('stall', types=bool, default=False,
+                             desc='add the chart-calibrated stall torque increment (C5-6)')
         self.options.declare('trim_options', types=dict, default={},
                              desc='passed to TrimConditionsGroup')
         self.options.declare('gearboxes', types=dict, default=EXAMPLE_GEARBOXES,
@@ -72,10 +77,20 @@ class ForwardFlightPowerGroup(om.Group):
             self.add_subsystem('no_comp', om.IndepVarComp('hp_comp', val=np.zeros(nn),
                                                           units='hp'), promotes=['*'])
 
+        if self.options['stall']:
+            self.add_subsystem('stall', StallTorqueIncrementComp(num_nodes=nn), promotes=['*'])
+            self.add_subsystem('stall_power', RotorPowerComp(num_nodes=nn),
+                               promotes_inputs=[('CQ_sigma', 'dCQ_sigma_stall'), 'rho',
+                                                'A_b', 'V_tip'],
+                               promotes_outputs=[('hp', 'hp_stall')])
+        else:
+            self.add_subsystem('no_stall', om.IndepVarComp('hp_stall', val=np.zeros(nn),
+                                                           units='hp'), promotes=['*'])
+
         self.add_subsystem('main_power', om.ExecComp(
-            'P_MR = hp_M + hp_comp', P_MR={'units': 'hp', 'shape': nn},
-            hp_M={'units': 'hp', 'shape': nn}, hp_comp={'units': 'hp', 'shape': nn}),
-            promotes=['*'])
+            'P_MR = hp_M + hp_comp + hp_stall', P_MR={'units': 'hp', 'shape': nn},
+            hp_M={'units': 'hp', 'shape': nn}, hp_comp={'units': 'hp', 'shape': nn},
+            hp_stall={'units': 'hp', 'shape': nn}), promotes=['*'])
         self.add_subsystem('tail_power', om.ExecComp(
             'P_TR = hp_T', P_TR={'units': 'hp', 'shape': nn},
             hp_T={'units': 'hp', 'shape': nn}), promotes=['*'])
