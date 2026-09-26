@@ -19,6 +19,11 @@ mu is held to [0.20, 0.40].
 
     C_T/sigma_eff = C_T/sigma + 0.003 (theta_1 + 5 deg)           p. 230
                     - (a / 6) d_alpha_stall                         airfoil stall angle shift
+
+twist_shift='p230' (default) applies the twist displacement of the stall
+limits recommended p. 230; twist_shift='book' reads the charts as they are
+(theta_1 = -5 deg), which is what Figure 4.38, and through it the 3,170 hp
+of p. 343, appear to do (C5-6).
     output: smooth floor at 0 (quadratic fillet, w = 0.0002)
 
     mu, CT_sigma, lambda_p (nn,), theta_1, a, d_alpha_stall --> dCQ_sigma_stall (nn,)
@@ -76,6 +81,7 @@ class StallTorqueIncrementComp(om.ExplicitComponent):
 
     def initialize(self):
         self.options.declare('num_nodes', types=int, default=1)
+        self.options.declare('twist_shift', default='p230', values=('p230', 'book'))
 
     def setup(self):
         nn = self.options['num_nodes']
@@ -107,9 +113,13 @@ class StallTorqueIncrementComp(om.ExplicitComponent):
         v2, d2, _ = smoothmin(-v1, -lo * np.ones_like(x), w)
         return -v2, d1 * d2
 
+    @property
+    def _k(self):
+        return TWIST_SHIFT if self.options['twist_shift'] == 'p230' else 0.0
+
     def _eval(self, inputs):
         i = inputs
-        ct_eff = (i['CT_sigma'] + TWIST_SHIFT * (i['theta_1'] * (180.0 / np.pi) + 5.0)
+        ct_eff = (i['CT_sigma'] + self._k * (i['theta_1'] * (180.0 / np.pi) + 5.0)
                   - i['a'] / 6.0 * i['d_alpha_stall'])
         xm = -2.0 * i['CT_sigma'] * i['lambda_p']
         mu_c, dmu = self._clamp(i['mu'], MU_GRID[0], MU_GRID[-1])
@@ -131,12 +141,12 @@ class StallTorqueIncrementComp(om.ExplicitComponent):
         _, _, _, dv, d, dmu, dct, dxm = self._eval(inputs)
         g_mu, g_ct, g_xm = (dv * d[:, k] for k in range(3))
         g_ct, g_xm = g_ct * dct, g_xm * dxm
-        J['CT_sigma_eff', 'theta_1'] = TWIST_SHIFT * (180.0 / np.pi) * np.ones_like(g_ct)
+        J['CT_sigma_eff', 'theta_1'] = self._k * (180.0 / np.pi) * np.ones_like(g_ct)
         J['CT_sigma_eff', 'a'] = -i['d_alpha_stall'] / 6.0 * np.ones_like(g_ct)
         J['CT_sigma_eff', 'd_alpha_stall'] = -i['a'] / 6.0 * np.ones_like(g_ct)
         J['dCQ_sigma_stall', 'mu'] = g_mu * dmu
         J['dCQ_sigma_stall', 'CT_sigma'] = g_ct + g_xm * (-2.0 * i['lambda_p'])
         J['dCQ_sigma_stall', 'lambda_p'] = g_xm * (-2.0 * i['CT_sigma'])
-        J['dCQ_sigma_stall', 'theta_1'] = g_ct * TWIST_SHIFT * (180.0 / np.pi)
+        J['dCQ_sigma_stall', 'theta_1'] = g_ct * self._k * (180.0 / np.pi)
         J['dCQ_sigma_stall', 'a'] = g_ct * (-i['d_alpha_stall'] / 6.0)
         J['dCQ_sigma_stall', 'd_alpha_stall'] = g_ct * (-i['a'] / 6.0)

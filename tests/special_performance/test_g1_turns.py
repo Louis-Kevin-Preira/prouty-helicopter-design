@@ -154,10 +154,12 @@ def ch4():
     return module
 
 
-def _turn_power(ch4, n, V_kt=115.0, stall=False):
+def _turn_power(ch4, n, V_kt=115.0, stall=False, twist_shift='p230'):
     from prouty.special_performance import SteadyTurnPowerGroup
     p = om.Problem()
-    p.model.add_subsystem('turn', SteadyTurnPowerGroup(stall=stall), promotes=['*'])
+    p.model.add_subsystem('turn', SteadyTurnPowerGroup(
+        stall=stall, power_options={'stall_options': {'twist_shift': twist_shift}}),
+        promotes=['*'])
     p.setup()
     for name, val in {**ch4.REF_ROTOR, **ch4.EXAMPLE_DESIGN,
                       **dict(load_elec=2200.0, flow_hyd=1.3, p_hyd=3000.0)}.items():
@@ -192,3 +194,15 @@ def test_turn_power_below_print_c5_6(ch4):
     assert 1.28 < p12 / p1 < 1.40
     assert 250.0 < p12 - p12_nostall < 380.0
     assert p12 < 3170.0
+
+
+def test_c5_6_book_reading_of_the_charts(ch4):
+    """C5-6 explained in part: read as the book appears to -- charts as they are, no
+    p. 230 twist displacement of the stall limits -- the stall increment gives 1,399 hp
+    level (Fig. 4.38: 1,470, -5 %) and 2,436 hp at 1.2 g (printed 3,170, -23 %): ratio
+    1.74 against 2.16. With the p. 230 shift: 1,206 and 1,620 hp, ratio 1.34."""
+    p1 = _turn_power(ch4, 1.0, stall=True, twist_shift='book').get_val('P_req', units='hp')[0]
+    p12 = _turn_power(ch4, 1.2, stall=True, twist_shift='book').get_val('P_req', units='hp')[0]
+    assert_near_equal(p1, 1470.0, 0.08)
+    assert 2200.0 < p12 < 3170.0
+    assert 1.6 < p12 / p1 < 1.9

@@ -49,6 +49,8 @@ class ForwardFlightPowerGroup(om.Group):
                              desc='add the Figure 3.43 penalty after the trim')
         self.options.declare('stall', types=bool, default=False,
                              desc='add the chart-calibrated stall torque increment (C5-6)')
+        self.options.declare('stall_options', types=dict, default={},
+                             desc='passed to StallTorqueIncrementComp (twist_shift)')
         self.options.declare('trim_options', types=dict, default={},
                              desc='passed to TrimConditionsGroup')
         self.options.declare('gearboxes', types=dict, default=EXAMPLE_GEARBOXES,
@@ -78,7 +80,9 @@ class ForwardFlightPowerGroup(om.Group):
                                                           units='hp'), promotes=['*'])
 
         if self.options['stall']:
-            self.add_subsystem('stall', StallTorqueIncrementComp(num_nodes=nn), promotes=['*'])
+            self.add_subsystem('stall', StallTorqueIncrementComp(num_nodes=nn,
+                                                                    **self.options['stall_options']),
+                               promotes=['*'])
             self.add_subsystem('stall_power', RotorPowerComp(num_nodes=nn),
                                promotes_inputs=[('CQ_sigma', 'dCQ_sigma_stall'), 'rho',
                                                 'A_b', 'V_tip'],

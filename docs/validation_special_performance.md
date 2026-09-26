@@ -97,6 +97,33 @@ the turn power is optimistic; `ThrustCapabilityComp.n_margin` flags them.
 **Tests.** `::test_turn_power_is_level_power_at_effective_weight`,
 `::test_turn_power_below_print_c5_6`.
 
+**Re-reading (Sept 2026): what C5-6 is.** The effective-weight method of
+p. 343 is applied as written (level power at n G.W.). The gap to 3,170 hp comes
+from the reference, not from the method:
+
+1. The 1,470 hp level value is read on Figure 4.38, which stands above the
+   closed-form chain and the charts at 20,000 lb (C4-29).
+2. The rise to 3,170 hp follows Figure 4.38's 24,000 lb curve, i.e. the charts
+   read as they are. The p. 230 recommendation -- move the stall limits by
+   dC_T/sigma = -0.003 (theta_1 + 5 deg), +0.015 for the example's -10 deg --
+   keeps the example out of stall; the book's figure does not appear to apply it.
+
+`StallTorqueIncrementComp(twist_shift='p230' | 'book')` (default 'p230'), passed
+through `ForwardFlightPowerGroup(stall_options=...)`. At 115 kt:
+
+| | level, 20,000 lb | 1.2 g, 24,000 lb | ratio |
+|---|---|---|---|
+| no stall increment (default) | 1,172 hp | 1,301 hp | 1.11 |
+| stall, twist_shift='p230' | 1,206 hp | 1,620 hp | 1.34 |
+| stall, twist_shift='book' | 1,399 hp | 2,436 hp | 1.74 |
+| printed (Fig. 4.38, p. 343) | 1,470 hp | 3,170 hp | 2.16 |
+
+The book reading brings the level value within 5 % of Figure 4.38 and explains
+most of the rise; 23 % remains at 1.2 g. Coherent default kept ('p230'), with
+the stall increment itself off by default (decision below).
+
+**Tests.** `test_g1_turns.py::test_c5_6_book_reading_of_the_charts`.
+
 **Final decision (Sept 2026): stall increment off everywhere by default.** Every
 group that can use it (Chapter 4 `ForwardFlightPowerGroup`, G1, G2c, G3, G4, G6)
 takes `stall=False` by default; published anchors are those without it. The
