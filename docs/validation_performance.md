@@ -795,6 +795,31 @@ book's own drag build-up (G4); so would a gross weight well above the stated
 `test_forward_flight_power_below_figure_4_48_c4_29` (a documented fact about
 the book's figure, not a tolerance on the model).
 
+**Re-examined with the Chapter 5 stall increment (Sept 2026).** The C5-6 work
+digitized the five chart plates of pp. 258-266 and built the chart stall torque
+above the closed form (`StallTorqueIncrementComp`). Adding it to this chain,
+with the charts read as they are (`stall=True, stall_options={'twist_shift':
+'book'}`: no p. 230 displacement of the stall limits), 20,000 lb, sea level:
+
+| V, kt | 60 | 80 | 100 | 120 | 140 | 160 |
+|---|---|---|---|---|---|---|
+| chain (default) | 1,085 | 1,027 | 1,076 | 1,214 | 1,454 | 1,876 |
+| chain + stall, p. 230 shift | 1,106 | 1,048 | 1,092 | 1,256 | 1,519 | 2,277 |
+| chain + stall, book reading | 1,120 | 1,059 | 1,152 | 1,522 | 2,244 | 2,772 |
+| Figure 4.48 | 1,131 | 1,059 | 1,189 | 1,577 | 2,337 | 3,182 |
+
+The book reading meets Figure 4.48 within 5 % from 60 to 140 kt (160 kt is
+mu = 0.415, past the last plate). The trimmed rotor sits at C_T/sigma = 0.086,
+X = 0.20 at mu = 0.30, on the stall knee of the charts (theta_0 ~ 14 deg); the
+rebuild above used C_T/sigma = 0.083 and X = 0.1555 (f alone) and read the
+inflow plate, which lands at 12.3 deg, below the knee. So Figure 4.48 is the
+chart method at the loads the full trim gives, stall torque included, read
+without the twist displacement; our default chain has no stall torque.
+
+**Status.** Explained, not changed: the default stays `stall=False` (project
+decision), and the anchors above keep their meaning. Test:
+`test_c4_29_book_reading_reproduces_figure_4_48`.
+
 ---
 
 ## C4-30 — Maximum speed: the balance works, the trim runs out first

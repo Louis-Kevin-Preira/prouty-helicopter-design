@@ -2972,3 +2972,30 @@ def test_forward_climb_group_more_power_climbs_faster():
     takeoff = _forward_climb_group(80.0, rating='takeoff').get_val('R_C', units='ft/min')[0]
     assert takeoff > continuous
     assert continuous > 2500.0                                # Figure 4.48 peaks at 2,650
+
+
+def _ff_power_book(V_kt):
+    """Chain plus the C5-6 stall increment, charts read as the book reads them
+    (no p. 230 twist displacement of the stall limits)."""
+    p = om.Problem()
+    p.model.add_subsystem('ff', ForwardFlightPowerGroup(
+        stall=True, stall_options={'twist_shift': 'book'}), promotes=['*'])
+    p.setup()
+    for name, val in {**REF_ROTOR, **EXAMPLE_DESIGN,
+                      **dict(load_elec=2200.0, flow_hyd=1.3, p_hyd=3000.0)}.items():
+        p.set_val(name, val)
+    p.set_val('V', V_kt * KT)
+    p.set_val('alpha_F', np.deg2rad(-6.0))
+    p.set_val('CT_sigma', 0.085)
+    p.run_model()
+    return p
+
+
+@pytest.mark.parametrize('V_kt', [60, 80, 100, 120, 140])
+def test_c4_29_book_reading_reproduces_figure_4_48(V_kt):
+    """C4-29 explained: with the stall torque read on the Chapter 3 charts as they are
+    (theta_1 = -5 deg, no p. 230 shift; C5-6), the chain meets Figure 4.48 within 5 %
+    from 60 to 140 kt (1,120/1,059/1,152/1,522/2,244 hp against 1,131/1,059/1,189/
+    1,577/2,337). At 160 kt (mu = 0.415, beyond the last plate) it is 13 % low."""
+    P = _ff_power_book(V_kt).get_val('P_req', units='hp')[0]
+    assert_near_equal(P, FIG_4_48_LEVEL[V_kt], 0.05)
