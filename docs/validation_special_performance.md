@@ -113,6 +113,12 @@ the turn power is optimistic; `ThrustCapabilityComp.n_margin` flags them.
   (0.088): engine power 1,301 -> 1,620 hp. Still well below the printed 3,170 hp,
   and below the chart method read without the twist shift (C_Q/sigma ~ 0.009):
   the p. 230 twist shift moves the example (-10 deg) 0.015 away from stall.
+- Enabled by default in the Chapter 5 groups that call the Chapter 4 power:
+  `SteadyTurnPowerGroup(stall=True)` (G1) and `ZoomGlideChainGroup(stall=True)`
+  (G2c). 1.2 g at 115 kt: 1,206 -> 1,620 hp (+34 %), against +8 % without the
+  increment and +116 % printed. Zoom chain at 20,000 lb: level power +1.4 % at
+  100 kt. Chapter 4 keeps stall=False by default (its published anchors unchanged).
+  Not yet in the rotor force balances of G3, G4, G6.
 
 **Status: correction designed, paused (Sept 2026).** Target is the chart method
 of Chapter 3, not the 3,170 hp of Figure 4.38.

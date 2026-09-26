@@ -9,8 +9,10 @@ pp. 317-319.
     power             ForwardFlightPowerGroup   level power at GW_eff (Chapter 4 G7)
 
 The Chapter 4 group sees GW_eff as its gross weight; every other input
-(V, rotor, fuselage, losses) is promoted unchanged. See C5-6 for the gap
-between this chain and the printed 3,170 hp.
+(V, rotor, fuselage, losses) is promoted unchanged. stall=True (default)
+adds the chart-calibrated stall torque increment of C5-6 (Chapter 3 charts
+pp. 258-266, twist shift p. 230): in the turn the rotor works at n C_T/sigma,
+where the closed-form trim alone has no stall.
 """
 
 import openmdao.api as om
@@ -24,6 +26,8 @@ class SteadyTurnPowerGroup(om.Group):
 
     def initialize(self):
         self.options.declare('num_nodes', types=int, default=1)
+        self.options.declare('stall', types=bool, default=True,
+                             desc='stall torque increment (C5-6) in the Chapter 4 power')
         self.options.declare('power_options', types=dict, default={},
                              desc='passed to ForwardFlightPowerGroup')
 
@@ -31,6 +35,7 @@ class SteadyTurnPowerGroup(om.Group):
         nn = self.options['num_nodes']
         self.add_subsystem('effective_weight', EffectiveWeightComp(num_nodes=nn),
                            promotes=['*'])
-        self.add_subsystem('power', ForwardFlightPowerGroup(num_nodes=nn,
-                                                            **self.options['power_options']),
+        power_options = dict(stall=self.options['stall'])
+        power_options.update(self.options['power_options'])
+        self.add_subsystem('power', ForwardFlightPowerGroup(num_nodes=nn, **power_options),
                            promotes_inputs=[('GW', 'GW_eff'), '*'], promotes_outputs=['*'])

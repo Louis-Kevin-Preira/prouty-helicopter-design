@@ -11,7 +11,7 @@ design input has the same shape in the two chains:
 
     speeds    SpeedNodesComp             V_nodes = [V_1, V_0]
     descent   AutorotationDescentGroup   R/D at V_nodes
-    power     ForwardFlightPowerGroup    P_req at V_nodes
+    power     ForwardFlightPowerGroup    P_req at V_nodes (stall increment C5-6 by default)
     split     ChainSplitComp             RD, P_1 at V_1;  P_0 at V_0
     zoom      ZoomGlideGroup             Delta_h, Delta_d, glide distance
 
@@ -41,6 +41,8 @@ class ZoomGlideChainGroup(om.Group):
     def initialize(self):
         self.options.declare('num_nodes', types=int, default=1,
                              desc='number of autorotation speeds V_1')
+        self.options.declare('stall', types=bool, default=True,
+                             desc='stall torque increment (C5-6) in the level power')
 
     def setup(self):
         nn = self.options['num_nodes']
@@ -48,7 +50,8 @@ class ZoomGlideChainGroup(om.Group):
         self.add_subsystem('speeds', SpeedNodesComp(num_nodes=nn), promotes=['*'])
         self.add_subsystem('descent', AutorotationDescentGroup(num_nodes=N),
                            promotes_inputs=SHARED + DESCENT_ONLY + ['GW'])
-        self.add_subsystem('power', ForwardFlightPowerGroup(num_nodes=N),
+        self.add_subsystem('power', ForwardFlightPowerGroup(num_nodes=N,
+                                                            stall=self.options['stall']),
                            promotes_inputs=SHARED + POWER_ONLY + ['GW'])
         self.connect('V_nodes', ['descent.V', 'power.V'])
         self.add_subsystem('split', ChainSplitComp(num_nodes=nn),
