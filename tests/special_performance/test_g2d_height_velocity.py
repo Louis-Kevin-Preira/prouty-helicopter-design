@@ -155,3 +155,75 @@ def test_partials(system, inputs):
     p = _run(system, **inputs)
     assert_check_partials(p.check_partials(method='cs', compact_print=True, out_stream=None),
                           atol=1e-8, rtol=1e-8)
+
+
+# ---------- Figure 5.10, 4,000 ft / 95 F panels (block A3) ----------
+
+from prouty.special_performance.book_figures import FIG_5_10_HOT, RHO_RATIO_4000_95F
+
+
+def _hv_hot(td):
+    p = om.Problem(reports=False)
+    p.model.add_subsystem('g', HeightVelocityGroup(time_delay=td), promotes=['*'])
+    p.setup()
+    for k, v in EXAMPLE.items():
+        p.set_val(k, v)
+    p.set_val('rho_ratio', RHO_RATIO_4000_95F)
+    p.set_val('CW_sigma', 0.083 / RHO_RATIO_4000_95F)
+    p.run_model()
+    return p
+
+
+@pytest.mark.parametrize('td, tol_v, tol_h', [('faa', 0.10, 0.18), ('military', 0.03, 0.07)])
+def test_anchor_fig510_hot_dual_engine(td, tol_v, tol_h):
+    """4,000 ft, 95 F, dual engine failure: V_CR 115 kt (FAA, printed 107) and
+    131.7 kt (military, printed 132); h_hi 2,622 / 2,414 ft (printed 2,260 / 2,300).
+    The FAA excess follows V_CR, as at sea level (87 vs 80 kt): read at the printed
+    noses, Figure 5.9 gives 2,316 / 2,423 ft, within 2.5 / 5 %."""
+    v_cr, _, h_hi = FIG_5_10_HOT[td]['dual']
+    p = _hv_hot(td)
+    assert_near_equal(p.get_val('V_CR', units='kn'), v_cr, tol_v)
+    assert_near_equal(p.get_val('h_hi'), h_hi, tol_h)
+    q = _run(HighHoverHeightComp(time_delay=td), V_CR=v_cr)
+    assert_near_equal(q.get_val('h_hi'), h_hi, 0.06)
+
+
+@pytest.mark.parametrize('td', ['faa', 'military'])
+def test_anchor_fig510_hot_single_engine(td):
+    """4,000 ft, 95 F, one engine out (twin): hover OGE 2,576 hp and one-engine takeoff
+    rating 1,598 hp (Chapter 4 hover, isothermal day), sink 6 ft/s. V_sink = 26 kt:
+    V_CR = 13 kt (FAA, printed 16) and 26 kt (military, printed 34); h_hi read on
+    Figure 5.9 at V_CR (assumption, no method in the book) = 293 / 300 ft against
+    296 / 322 printed."""
+    from prouty.special_performance import MultiEngineSinkGroup
+    from prouty.special_performance.book_figures import EXAMPLE_ROTOR, EXAMPLE_POWER
+    p = om.Problem(reports=False)
+    p.model.add_subsystem('g', MultiEngineSinkGroup(time_delay=td), promotes=['*'])
+    p.setup()
+    for k, v in {**{k: v for k, v in EXAMPLE_ROTOR.items() if k != 'GW'}, **EXAMPLE_POWER}.items():
+        p.set_val('power.' + k, v)
+    p.set_val('power.rho', 0.002377 * RHO_RATIO_4000_95F)
+    p.set_val('power.V_son', 1154.6)
+    p.set_val('power.CT_sigma', 0.105)
+    p.set_val('power.alpha_F', np.deg2rad(-15.0) * np.ones(3))
+    for k, v in dict(P_hover=2576.4, P_avail=1598.0, V_LG=6.0, h_lo=30.0).items():
+        p.set_val(k, v)
+    p.run_model()
+    v_cr, _, h_hi = FIG_5_10_HOT[td]['single']
+    V_CR = p.get_val('V_CR', units='kn')[0]
+    assert 0.6 * v_cr < V_CR < v_cr
+    q = _run(HighHoverHeightComp(time_delay=td), V_CR=V_CR)
+    assert_near_equal(q.get_val('h_hi'), h_hi, 0.08)
+
+
+def test_hot_day_hover_inputs_from_chapter4():
+    """The two powers above: Chapter 4 hover at 4,000 ft on the isothermal 95 F day."""
+    import importlib.util, pathlib
+    path = pathlib.Path(__file__).parents[1] / 'performance' / 'test_chapter4.py'
+    spec = importlib.util.spec_from_file_location('ch4_tests', path)
+    ch4 = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ch4)
+    p = ch4._hover_problem(day='isothermal', altitude=4000.0)
+    assert_near_equal(p.get_val('P_req', units='hp')[0], 2576.4, 1e-3)
+    assert_near_equal(p.get_val('P_avail', units='hp')[0][0] / 2.0, 1598.0, 1e-3)
+    assert_near_equal(p.get_val('rho')[0] / 0.002377, RHO_RATIO_4000_95F, 1e-3)

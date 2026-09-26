@@ -18,6 +18,12 @@ FIG_5_6 = {60: (473, None), 70: (453, 2007), 80: (430, 2178), 90: (397, 2236),
            100: (353, 2018), 120: (249, 1457), 140: (125, 785)}
 # Figure 5.10 (p. 359), sea level, 20,000 lb: time delay -> (nose V_CR [kt], top h_hi [ft])
 FIG_5_10 = {'faa': (80.0, 1330.0), 'military': (101.0, 1390.0)}
+# Figure 5.10, 4,000 ft, 95 F (isothermal hot day, rho/rho_0 = 0.807):
+# dual engine failure (nose V_CR [kt], nose h [ft], top h_hi [ft]) and
+# single engine failure of the twin (V_CR [kt], lower edge h [ft], top h_hi [ft])
+FIG_5_10_HOT = {'faa': {'dual': (107.0, 78.0, 2260.0), 'single': (16.0, 89.0, 296.0)},
+                'military': {'dual': (132.0, 111.0, 2300.0), 'single': (34.0, 82.0, 322.0)}}
+RHO_RATIO_4000_95F = 0.8075
 # Figure 5.12 (p. 362): C_W/sigma -> {flare angle [deg]: mu_auto}
 FIG_5_12 = {0.05: {10: .2245, 15: .156, 20: .1193, 30: .0837, 45: .0663},
             0.10: {15: .205, 20: .154, 30: .1094, 45: .0901}}

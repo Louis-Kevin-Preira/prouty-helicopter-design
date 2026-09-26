@@ -309,6 +309,30 @@ losses. t_equiv within 3 % of the print, Δt 13 % below.
   Figure 5.10 showing no single-engine envelope at sea level.
 - High-speed portion of Figure 5.7: no method in the book (p. 358), not modeled.
 
+### Figure 5.10, 4,000 ft / 95 F panels (block A3)
+
+Isothermal hot day (C4-4): rho/rho_0 = 0.807, C_W/sigma = 0.083/0.807.
+
+| | chain | printed |
+|---|---|---|
+| dual engine, FAA: V_CR / h_hi | 115 kt / 2,622 ft | 107 kt / 2,260 ft |
+| dual engine, military | 131.7 kt / 2,414 ft | 132 kt / 2,300 ft |
+| h_hi of Fig. 5.9 at the printed noses | 2,316 / 2,423 ft | 2,260 / 2,300 ft |
+| single engine (twin), FAA: V_CR / h_hi | 13 kt / 293 ft | 16 kt / 296 ft |
+| single engine, military | 26 kt / 300 ft | 34 kt / 322 ft |
+
+- Dual engine: the military nose is exact; the FAA nose is 7.5 % high, as at sea
+  level (87 against 80 kt), and h_hi follows the nose through Figure 5.9.
+- Single engine: hover OGE 2,576 hp and one-engine takeoff rating 1,598 hp from
+  the Chapter 4 hover chain on the hot day, sink 6 ft/s: V_sink = 26 kt. The
+  military nose (V_CR = V_sink) is 23 % low; h_hi from Figure 5.9 (assumption kept,
+  no method in the book) within 1 and 7 % of the print.
+- Nose heights: 95 / 120 ft by the p. 357 rule against 78 / 111 ft read on the
+  hot panels.
+
+**Tests.** `test_g2d_height_velocity.py::test_anchor_fig510_hot_dual_engine`,
+`::test_anchor_fig510_hot_single_engine`, `::test_hot_day_hover_inputs_from_chapter4`.
+
 ## G2e — Minimum touchdown speed (pp. 358-363)
 
 - θ̇_max = γΩΔB₁/16 = 87.8 deg/s for ΔB₁ = 8° (printed 88). Δt = 1.25 s with
