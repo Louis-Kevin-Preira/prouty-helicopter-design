@@ -8,6 +8,10 @@ Chapter 5, "Maximum Acceleration" pp. 364-365, Figure 5.14.
     torque      AvailableTorqueComp     C_Q/sigma available to the main rotor
     rotor       RotorForceLimitGroup    mode='accel', tilted rotor at that torque
     capability  SmoothMinComp           acc_max = min(acc_hover, acc)
+
+stall=True: the rotor torque in the balance includes the C5-6 stall
+increment (Chapter 3 charts); default False pending the treatment below
+mu = 0.20 (outside the charts).
 """
 
 import openmdao.api as om
@@ -23,12 +27,15 @@ class MaxAccelerationGroup(om.Group):
 
     def initialize(self):
         self.options.declare('num_nodes', types=int, default=1)
+        self.options.declare('stall', types=bool, default=False,
+                             desc='C5-6 stall torque increment in the rotor balance')
 
     def setup(self):
         nn = self.options['num_nodes']
         self.add_subsystem('hover', HoverAccelerationComp(), promotes=['*'])
         self.add_subsystem('torque', AvailableTorqueComp(), promotes=['*'])
-        self.add_subsystem('rotor', RotorForceLimitGroup(num_nodes=nn, mode='accel'),
+        self.add_subsystem('rotor', RotorForceLimitGroup(num_nodes=nn, mode='accel',
+                                                               stall=self.options['stall']),
                            promotes=['*'])
         self.connect('CQ_sigma_avail', 'CQ_sigma_target', src_indices=[0] * nn)
         self.add_subsystem('capability', SmoothMinComp(num_nodes=nn, a='acc_hover', b='acc',

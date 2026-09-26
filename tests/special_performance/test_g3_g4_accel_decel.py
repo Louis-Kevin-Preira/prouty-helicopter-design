@@ -143,3 +143,19 @@ def test_decel_totals_through_the_balance():
     from openmdao.utils.assert_utils import assert_check_totals
     assert_check_totals(p.check_totals(of=['decel'], wrt=['GW', 'V_tip', 'f', 'cd_bar'],
                                        method='cs', out_stream=None), atol=1e-6, rtol=1e-6)
+
+
+def test_stall_option_brings_g3_toward_fig514():
+    """C5-6 in the G3 balance (stall=True), 80-160 kt (mu >= 0.20, inside the charts):
+    the capability drops by 4-15 % and every point moves toward Figure 5.14."""
+    V = np.array([80.0, 100.0, 120.0, 140.0, 160.0])
+    n = len(V)
+    res = {}
+    for stall in (False, True):
+        p = _run(MaxAccelerationGroup(num_nodes=n, stall=stall), V=(V, 'kn'),
+                 cd_bar=0.01 * np.ones(n), **ROTOR)
+        res[stall] = p.get_val('acc_max')
+    fig = np.array([FIG_5_14[v] for v in V])
+    assert np.all(res[True] < res[False])
+    assert np.all(np.abs(res[True] - fig) < np.abs(res[False] - fig))
+    assert np.all((res[False] - res[True]) / res[False] < 0.16)

@@ -109,7 +109,7 @@ class StallTorqueIncrementComp(om.ExplicitComponent):
 
     def _eval(self, inputs):
         i = inputs
-        ct_eff = (i['CT_sigma'] + TWIST_SHIFT * (np.degrees(i['theta_1']) + 5.0)
+        ct_eff = (i['CT_sigma'] + TWIST_SHIFT * (i['theta_1'] * (180.0 / np.pi) + 5.0)
                   - i['a'] / 6.0 * i['d_alpha_stall'])
         xm = -2.0 * i['CT_sigma'] * i['lambda_p']
         mu_c, dmu = self._clamp(i['mu'], MU_GRID[0], MU_GRID[-1])
@@ -131,12 +131,12 @@ class StallTorqueIncrementComp(om.ExplicitComponent):
         _, _, _, dv, d, dmu, dct, dxm = self._eval(inputs)
         g_mu, g_ct, g_xm = (dv * d[:, k] for k in range(3))
         g_ct, g_xm = g_ct * dct, g_xm * dxm
-        J['CT_sigma_eff', 'theta_1'] = TWIST_SHIFT * np.degrees(1.0) * np.ones_like(g_ct)
+        J['CT_sigma_eff', 'theta_1'] = TWIST_SHIFT * (180.0 / np.pi) * np.ones_like(g_ct)
         J['CT_sigma_eff', 'a'] = -i['d_alpha_stall'] / 6.0 * np.ones_like(g_ct)
         J['CT_sigma_eff', 'd_alpha_stall'] = -i['a'] / 6.0 * np.ones_like(g_ct)
         J['dCQ_sigma_stall', 'mu'] = g_mu * dmu
         J['dCQ_sigma_stall', 'CT_sigma'] = g_ct + g_xm * (-2.0 * i['lambda_p'])
         J['dCQ_sigma_stall', 'lambda_p'] = g_xm * (-2.0 * i['CT_sigma'])
-        J['dCQ_sigma_stall', 'theta_1'] = g_ct * TWIST_SHIFT * np.degrees(1.0)
+        J['dCQ_sigma_stall', 'theta_1'] = g_ct * TWIST_SHIFT * (180.0 / np.pi)
         J['dCQ_sigma_stall', 'a'] = g_ct * (-i['d_alpha_stall'] / 6.0)
         J['dCQ_sigma_stall', 'd_alpha_stall'] = g_ct * (-i['a'] / 6.0)

@@ -118,7 +118,22 @@ the turn power is optimistic; `ThrustCapabilityComp.n_margin` flags them.
   (G2c). 1.2 g at 115 kt: 1,206 -> 1,620 hp (+34 %), against +8 % without the
   increment and +116 % printed. Zoom chain at 20,000 lb: level power +1.4 % at
   100 kt. Chapter 4 keeps stall=False by default (its published anchors unchanged).
-  Not yet in the rotor force balances of G3, G4, G6.
+- Step 2, rotor force balances (option `stall`, default False in all three):
+  - G3 (`MaxAccelerationGroup(stall=True)`): balance on C_Q/sigma + dC_Q/sigma_stall.
+    40-160 kt: 24.5/19.9/16.0/12.8/10.2/7.8/4.9 -> 22.8/19.0/15.3/11.5/9.2/6.9/4.2
+    ft/s^2 (Fig. 5.14: 22.9/18.1/14.0/10.2/6.6/3.3/0): closer at every speed, but
+    the gap at 120-160 kt stays (C_T/sigma_eff only 0.076-0.08 with the twist
+    shift). Below mu = 0.20 (V < 77 kt at 650 ft/s) the charts end and mu is held
+    at 0.20: the G6 acceleration table (26-125 kt) and the G5 capability at
+    28,000 lb (V_max 214 -> 120 kt) then fail or move far; default left False
+    until a treatment below mu = 0.20 is chosen.
+  - G4 (`MaxDecelerationGroup(stall=True)`): +0.1 ft/s^2 from 60 to 160 kt
+    (C_T/sigma_eff < 0.07 at 120 % rpm); 21 -> 69 ft/s^2 at 40 kt (mu = 0.09,
+    outside the charts). No benefit: default False.
+  - G6 (`TurnDecelerationGroup(stall=True)`): the turn runs at the Figure 5.2
+    ceiling (C_T/sigma = 0.167, eff. 0.152, beyond the charts); the balance does
+    not converge. The ceiling already stands for the stall limit (double count):
+    default False.
 
 **Status: correction designed, paused (Sept 2026).** Target is the chart method
 of Chapter 3, not the 3,170 hp of Figure 4.38.

@@ -23,10 +23,13 @@ class MaxDecelerationGroup(om.Group):
 
     def initialize(self):
         self.options.declare('num_nodes', types=int, default=1)
+        self.options.declare('stall', types=bool, default=False,
+                             desc='C5-6 stall torque increment in the rotor balance')
 
     def setup(self):
         nn = self.options['num_nodes']
-        self.add_subsystem('autorotation', RotorForceLimitGroup(num_nodes=nn, mode='decel'),
+        self.add_subsystem('autorotation', RotorForceLimitGroup(num_nodes=nn, mode='decel',
+                                                                   stall=self.options['stall']),
                            promotes=['*'])
         self.add_subsystem('capability', SmoothMinComp(num_nodes=nn, a='acc_max', b='decel',
                                                        out='decel_max'), promotes=['*'])
