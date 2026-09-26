@@ -97,6 +97,11 @@ the turn power is optimistic; `ThrustCapabilityComp.n_margin` flags them.
 **Tests.** `::test_turn_power_is_level_power_at_effective_weight`,
 `::test_turn_power_below_print_c5_6`.
 
+**Final decision (Sept 2026): stall increment off everywhere by default.** Every
+group that can use it (Chapter 4 `ForwardFlightPowerGroup`, G1, G2c, G3, G4, G6)
+takes `stall=False` by default; published anchors are those without it. The
+option stays available and tested; its effects are recorded below.
+
 **Status: correction coded (Sept 2026).** `StallTorqueIncrementComp`
 (`prouty/performance`), `ForwardFlightPowerGroup(stall=True)` (default False).
 
@@ -113,12 +118,12 @@ the turn power is optimistic; `ThrustCapabilityComp.n_margin` flags them.
   (0.088): engine power 1,301 -> 1,620 hp. Still well below the printed 3,170 hp,
   and below the chart method read without the twist shift (C_Q/sigma ~ 0.009):
   the p. 230 twist shift moves the example (-10 deg) 0.015 away from stall.
-- Enabled by default in the Chapter 5 groups that call the Chapter 4 power:
+- Available as an option in the Chapter 5 groups that call the Chapter 4 power:
   `SteadyTurnPowerGroup(stall=True)` (G1) and `ZoomGlideChainGroup(stall=True)`
   (G2c). 1.2 g at 115 kt: 1,206 -> 1,620 hp (+34 %), against +8 % without the
   increment and +116 % printed. Zoom chain at 20,000 lb: level power +1.4 % at
-  100 kt. Chapter 4 keeps stall=False by default (its published anchors unchanged).
-- Step 2, rotor force balances (option `stall`, default False in all three):
+  100 kt.
+- Rotor force balances (option `stall`):
   - G3 (`MaxAccelerationGroup(stall=True)`): balance on C_Q/sigma + dC_Q/sigma_stall.
     40-160 kt: 24.5/19.9/16.0/12.8/10.2/7.8/4.9 -> 22.8/19.0/15.3/11.5/9.2/6.9/4.2
     ft/s^2 (Fig. 5.14: 22.9/18.1/14.0/10.2/6.6/3.3/0): closer at every speed, but

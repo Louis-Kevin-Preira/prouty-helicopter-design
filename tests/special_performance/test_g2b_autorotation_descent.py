@@ -90,12 +90,9 @@ def chain(ch4):
 
 
 def test_chain_powers_are_the_chapter4_powers(chain, ch4):
-    """P_1 is the Chapter 4 level power plus the C5-6 stall increment, which is
-    small at 20,000 lb (C_T/sigma_eff about 0.07): +1.4 % at 100 kt."""
     V1, p = chain
     ref = ch4._ff_power(100.0).get_val('P_req', units='hp')[0]
-    P1 = p.get_val('P_1', units='hp')[V1 == 100.0][0]
-    assert ref <= P1 <= 1.03 * ref
+    assert_near_equal(p.get_val('P_1', units='hp')[V1 == 100.0][0], ref, 1e-4)
 
 
 def test_chain_best_autorotation_speed_for_glide(chain):

@@ -154,7 +154,7 @@ def ch4():
     return module
 
 
-def _turn_power(ch4, n, V_kt=115.0, stall=True):
+def _turn_power(ch4, n, V_kt=115.0, stall=False):
     from prouty.special_performance import SteadyTurnPowerGroup
     p = om.Problem()
     p.model.add_subsystem('turn', SteadyTurnPowerGroup(stall=stall), promotes=['*'])
@@ -172,7 +172,7 @@ def _turn_power(ch4, n, V_kt=115.0, stall=True):
 
 def test_turn_power_is_level_power_at_effective_weight(ch4):
     """p. 343: power in the turn = level power at n*GW (Chapter 4 run at 24,000 lb)."""
-    turn = _turn_power(ch4, 1.2, stall=False).get_val('P_req', units='hp')[0]
+    turn = _turn_power(ch4, 1.2).get_val('P_req', units='hp')[0]
     level = ch4._ff_power(115.0, GW=24000.0, CT_sigma=0.102).get_val('P_req', units='hp')[0]
     assert_near_equal(turn, level, 1e-4)   # trim solver tolerance
 
@@ -180,14 +180,14 @@ def test_turn_power_is_level_power_at_effective_weight(ch4):
 def test_turn_power_below_print_c5_6(ch4):
     """C5-6: 1.2 g at 115 kt, printed 3,170 hp against 1,470 hp level (Fig. 4.38, p. 343).
 
-    Without the stall increment the chain rises by 8 % (1,206 -> 1,301 hp); with it
-    (default) by 34 % (1,206 -> 1,620 hp: +316 hp at the rotor at C_T/sigma_eff = 0.088).
+    Without the stall increment (default) the chain rises by 8 % (1,172 -> 1,301 hp at
+    engine); with the C5-6 option by 34 % (1,206 -> 1,620 hp: +316 hp at the rotor at C_T/sigma_eff = 0.088).
     The printed 116 % follows the 24,000 lb curve of Fig. 4.38 on the upper stall
     limit; the p. 230 twist shift keeps the example (-10 deg) 0.015 further from stall.
     """
-    p1 = _turn_power(ch4, 1.0).get_val('P_req', units='hp')[0]
-    p12 = _turn_power(ch4, 1.2).get_val('P_req', units='hp')[0]
-    p12_nostall = _turn_power(ch4, 1.2, stall=False).get_val('P_req', units='hp')[0]
+    p1 = _turn_power(ch4, 1.0, stall=True).get_val('P_req', units='hp')[0]
+    p12 = _turn_power(ch4, 1.2, stall=True).get_val('P_req', units='hp')[0]
+    p12_nostall = _turn_power(ch4, 1.2).get_val('P_req', units='hp')[0]
     assert 1.0 < p12_nostall / p1 < 1.12
     assert 1.28 < p12 / p1 < 1.40
     assert 250.0 < p12 - p12_nostall < 380.0

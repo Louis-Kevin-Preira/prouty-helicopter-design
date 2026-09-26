@@ -9,7 +9,7 @@ pp. 317-319.
     power             ForwardFlightPowerGroup   level power at GW_eff (Chapter 4 G7)
 
 The Chapter 4 group sees GW_eff as its gross weight; every other input
-(V, rotor, fuselage, losses) is promoted unchanged. stall=True (default)
+(V, rotor, fuselage, losses) is promoted unchanged. stall=True (option, default False)
 adds the chart-calibrated stall torque increment of C5-6 (Chapter 3 charts
 pp. 258-266, twist shift p. 230): in the turn the rotor works at n C_T/sigma,
 where the closed-form trim alone has no stall.
@@ -26,7 +26,7 @@ class SteadyTurnPowerGroup(om.Group):
 
     def initialize(self):
         self.options.declare('num_nodes', types=int, default=1)
-        self.options.declare('stall', types=bool, default=True,
+        self.options.declare('stall', types=bool, default=False,
                              desc='stall torque increment (C5-6) in the Chapter 4 power')
         self.options.declare('power_options', types=dict, default={},
                              desc='passed to ForwardFlightPowerGroup')

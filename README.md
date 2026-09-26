@@ -67,6 +67,11 @@ helicopter and the trim will not converge from them. Give it a rotor.
 | `docs/validation_airfoil.md` | Chapter 6, figure-by-figure anchors |
 | `docs/validation_flapping.md` | Chapter 7 |
 | `docs/validation_trim.md` | Chapter 8, fourteen entries |
+| `docs/validation_hover.md` | Chapter 1 |
+| `docs/validation_vertical.md` | Chapter 2 |
+| `docs/validation_performance.md` | Chapter 4 |
+| `docs/validation_special_performance.md` | Chapter 5, discrepancies C5-1 to C5-9, groups G1-G7 |
+| `docs/validation_stability.md` | Chapter 9 |
 
 ## Validation
 
@@ -94,22 +99,30 @@ commit.
 * C_H/sigma sits a factor of 1.9 below chart 3 with no cause found in nine
   measured eliminations; the resumption point is written up in the notes;
 * the isolated rotor charts can be generated but the full set of 45 plates has
-  not been run.
+  not been run;
+* Chapter 5: the chart-calibrated stall torque increment (C5-6) is coded and
+  tested but off by default everywhere (`stall=False`); aerobatic maneuvers
+  are not modeled; the multiengine h_hi of the H-V diagram reuses Figure 5.9.
 
 ## Layout
 
 ```
 src/prouty/
-    hover/              Chapter 1, 32 modules
-    forward_flight/     Chapter 3, 58 modules
-    airfoil/            Chapter 6, 13 modules
-    flapping/           Chapter 7, 29 modules
-    trim/               Chapter 8, 39 modules
-    performance/        Chapter 4, stub
-    stability/          Chapter 9, stub
-    design/             Chapter 10, stub
-tests/                  653 tests, 26 marked slow
+    hover/                Chapter 1, 35 modules
+    vertical/             Chapter 2, 21 modules
+    forward_flight/       Chapter 3, 58 modules
+    performance/          Chapter 4, 64 modules
+    special_performance/  Chapter 5, 73 modules (+ data/: digitized figures and
+                          Chapter 3 rotor charts pp. 258-266)
+    airfoil/              Chapter 6, 13 modules
+    flapping/             Chapter 7, 29 modules
+    trim/                 Chapter 8, 39 modules
+    stability/            Chapter 9, 48 modules
+    design/               Chapter 10, stub
+tests/                  one folder per chapter, `slow` marker for the long runs
 docs/                   validation notes, one file per chapter
+examples/               figure-reproduction scripts (examples/special_performance/: Figs 5.5,
+                        5.10, 5.14-5.15, 5.16, 5.17)
 validation/             figure-reproduction scripts
 scripts/                documented disagreements, kept runnable
 ```
